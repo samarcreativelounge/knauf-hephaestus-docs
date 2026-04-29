@@ -47,22 +47,22 @@
   .tab-btn.questions.active { background:#3b0f0d; border-color:#f85149; color:#ffd2cf; }
   /* questions & integrations panel styles */
   .q-section { margin-bottom:32px; }
-  .q-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
-    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; margin:0 0 16px; }
-  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22; padding:16px 18px; margin-bottom:12px; }
+  .q-section-title { font-size:12px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
+    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:6px; margin:0 0 18px; }
+  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22; padding:20px 24px; margin-bottom:16px; }
   .q-card.flag-red   { border-left:3px solid #f85149; }
   .q-card.flag-amber { border-left:3px solid #f59f4c; }
   .q-card.flag-blue  { border-left:3px solid #4c8bf5; }
   .q-card.flag-grey  { border-left:3px solid #4a5168; }
-  .q-tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px;
+  .q-tag { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px;
     font-weight:600; letter-spacing:.4px; margin-bottom:8px; }
   .q-tag.red   { background:rgba(248,81,73,.12);  color:#f85149;  border:1px solid rgba(248,81,73,.3);  }
   .q-tag.amber { background:rgba(245,159,76,.1);  color:#f59f4c;  border:1px solid rgba(245,159,76,.25); }
   .q-tag.blue  { background:rgba(76,139,245,.1);  color:#4c8bf5;  border:1px solid rgba(76,139,245,.25); }
   .q-tag.grey  { background:rgba(74,81,104,.2);   color:#8b949e;  border:1px solid rgba(74,81,104,.4); }
-  .q-q { font-size:14px; font-weight:500; color:#e6edf3; margin:0 0 6px; line-height:1.45; }
-  .q-context { font-size:12px; color:#8b949e; margin:0; line-height:1.6; }
-  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11px; color:#cbe0ff; }
+  .q-q { font-size:15px; font-weight:500; color:#e6edf3; margin:0 0 8px; line-height:1.45; }
+  .q-context { font-size:13px; color:#8b949e; margin:0; line-height:1.65; }
+  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:12px; color:#cbe0ff; }
   .q-context code.warn { color:#ffd2cf; }
 </style>
 </head>
@@ -519,7 +519,7 @@
   </div><!-- /tab-ccd -->
 
 <div id="tab-integrations" class="tab-panel">
-  <div style="max-width:860px; margin-top:4px;">
+  <div style="margin-top:4px;">
 
     <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
       All external services and SDKs this project connects to at runtime or during the build pipeline.
@@ -617,7 +617,7 @@
   </div><!-- /tab-integrations -->
 
 <div id="tab-questions" class="tab-panel">
-  <div style="max-width:860px; margin-top:4px;">
+  <div style="margin-top:4px;">
 
     <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
       The items below are open questions surfaced from a technical review of the Unity project.
