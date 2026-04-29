@@ -154,6 +154,7 @@
       <button class="tab-btn active" onclick="showTab('scene',this)">Scene Flow</button>
       <button class="tab-btn" onclick="showTab('ccd',this)">Addressables &amp; CCD Pipeline</button>
       <button class="tab-btn" onclick="showTab('questions',this)">Questions</button>
+      <button class="tab-btn" onclick="showTab('integrations',this)">Outside Integrations</button>
     </div>
 
     <div id="tab-scene" class="tab-panel active">
@@ -911,6 +912,104 @@
   </div>
   </div><!-- /tab-questions -->
 
+  <div id="tab-integrations" class="tab-panel">
+  <div style="max-width:860px; margin-top:4px;">
+
+    <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
+      All external services and SDKs this project connects to at runtime or during the build pipeline.
+      None of these are optional — removing any one would require code changes.
+    </p>
+
+    <!-- ── Unity Gaming Services ── -->
+    <div class="q-section">
+      <div class="q-section-title">Unity Gaming Services</div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY CCD</span>
+        <p class="q-q">Cloud Content Delivery — remote CDN for VPT scene bundles</p>
+        <p class="q-context">
+          Hosts the compressed Addressable asset bundles for all 9 VPT factory rooms
+          (<code>01_TourEntrance</code> through <code>09_WarehouseAndDistribution</code>).
+          On each app launch the headset fetches a remote catalog, compares content hashes,
+          and downloads only changed bundles — no App Lab submission needed for content updates.
+          Bundles are cached on-device so no network connection is required during play.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY AUTHENTICATION</span>
+        <p class="q-q">Anonymous sign-in — silent session token for Cloud Code access</p>
+        <p class="q-context">
+          Runs automatically when the player enters <code>00_WaitingRoom</code>.
+          No login screen is shown — the SDK signs the player in anonymously and returns a session
+          token. That token is required to authorise any calls to Unity Cloud Code.
+          Without it, the access code gate cannot function.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY CLOUD CODE</span>
+        <p class="q-q">Server-side access code validation — <code>CheckAccessCode</code> module</p>
+        <p class="q-context">
+          The player types a code on the in-VR keypad in the WaitingRoom. That code is sent
+          server-side to the <code>VPTAccessService/CheckAccessCode</code> Cloud Code module,
+          which returns <code>true</code> or <code>false</code>. No validation logic lives on
+          the device — codes can be managed without rebuilding the app.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY BUILD AUTOMATION</span>
+        <p class="q-q">CI/CD pipeline — automated Addressables build and CCD upload</p>
+        <p class="q-context">
+          <code>CloudBuildConfigurator.cs</code> reads the <code>CLOUD_PROFILE_NAME</code>
+          environment variable set in Unity Build Automation to determine which CCD bucket
+          to target. When a build is triggered, Addressables bundles are automatically
+          packaged and uploaded to CCD as part of the pipeline — no manual upload step required.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── Third-party ── -->
+    <div class="q-section">
+      <div class="q-section-title">Third-party services</div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">MIXPANEL</span>
+        <p class="q-q">Analytics — training event tracking across KTA and VPT</p>
+        <p class="q-context">
+          Tracks the following events: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
+          <code>Level_Started</code>, <code>Level_Completed</code>, <code>Level_Exited</code>,
+          <code>Module_Entered</code>, <code>Module_Exited</code>, plus timed event durations.
+          All tracking is handled by <code>AnalyticsManager.cs</code>. Data is sent to the
+          Mixpanel project associated with the app's API key — no on-device storage of analytics data.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── Hardware SDK ── -->
+    <div class="q-section">
+      <div class="q-section-title">Hardware SDK</div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">META XR SDK</span>
+        <p class="q-q">Quest controller haptics and in-editor VR simulation</p>
+        <p class="q-context">
+          Two Meta XR packages are included: <code>com.meta.xr.sdk.haptics</code> (67.0.0)
+          for controller vibration feedback during interactions, and
+          <code>com.meta.xr.simulator</code> (81.0.0) for testing the experience inside
+          the Unity editor without a physical headset. Neither package communicates with
+          an external server at runtime — both are local device SDKs.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  </div><!-- /tab-integrations -->
+
 </div>
 
 <!-- ══════════════════ INSPECTOR PANEL (fixed overlay) ══════════════════ -->
@@ -1344,4 +1443,3 @@ function showTab(id, btn){
 </script>
 </body>
 </html>
-                                                                                                                                              
