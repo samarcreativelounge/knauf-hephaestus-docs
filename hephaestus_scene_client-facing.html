@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Knauf VR Training Academy — Scene Overview</title>
+<style>
+  *, *::before, *::after { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:#0e1116; color:#e6edf3;
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+
+  #page { padding:24px; max-width:2200px; }
+
+  #page h1  { font-size:19px; margin:0 0 3px; font-weight:600; }
+  #page .sub{ font-size:12px; color:#8b949e; margin-bottom:12px; }
+
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; font-size:11px; color:#8b949e; }
+  .legend .sw { display:inline-flex; align-items:center; gap:5px; }
+  .legend .dot { width:10px; height:10px; border-radius:2px; display:inline-block; border:1px solid; }
+  .legend .ln  { width:18px; height:0; border-top:2px solid currentColor; }
+
+  svg { display:block; width:100%; height:auto;
+    background:radial-gradient(ellipse at 50% 0%,#131922 0%,#0a0d12 80%);
+    border:1px solid #2a3142; border-radius:8px; }
+</style>
+</head>
+<body>
+<div id="page">
+  <h1>Knauf VR Training Academy — scene overview</h1>
+  <div class="sub">Meta Quest VR · two content modes (KTA product showroom / VPT Virtual Plant Tour) · switched by a build-time toggle</div>
+
+  <div style="font-size:13px;line-height:1.65;color:#cdd9e5;margin:0 0 16px;max-width:860px;">
+    This diagram maps the structure of the Knauf VR Training Academy app for Meta Quest. Each coloured
+    box is a space or environment within the experience, and the arrows show how players move between them.
+    The app runs in one of two modes — the <strong style="color:#cbe0ff;">KTA product showroom</strong> or
+    the <strong style="color:#ffe2c2;">VPT factory tour</strong> — determined by a configuration switch
+    set at build time. Both modes share the same startup sequence but branch into entirely separate
+    environments from there.
+  </div>
+
+  <div class="legend">
+    <span class="sw"><i class="dot" style="background:#3a3f4a;border-color:#8b949e"></i>Boot</span>
+    <span class="sw"><i class="dot" style="background:#3a1f4a;border-color:#ce6cf0;transform:rotate(45deg)"></i>Master hub</span>
+    <span class="sw"><i class="dot" style="background:#0d1d3a;border-color:#4c8bf5"></i>KTA scene</span>
+    <span class="sw"><i class="dot" style="background:#3a230d;border-color:#f59f4c"></i>VPT scene</span>
+    <span class="sw" style="color:#9ad06b"><span class="ln"></span>State machine</span>
+    <span class="sw" style="color:#58a6ff"><span class="ln" style="border-top-style:dashed"></span>UI trigger</span>
+    <span class="sw" style="color:#f59f4c"><span class="ln" style="border-top-style:dotted"></span>XR portal</span>
+    <span class="sw" style="color:#ce6cf0"><span class="ln"></span>Boot branch</span>
+  </div>
+
+  <svg viewBox="0 0 1640 1120" xmlns="http://www.w3.org/2000/svg"
+       font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+    <defs>
+      <marker id="ar-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ad06b"/></marker>
+      <marker id="ar-u" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+      <marker id="ar-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f59f4c"/></marker>
+      <marker id="ar-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ce6cf0"/></marker>
+      <style>
+        .node text         { font-size:13px; fill:#e6edf3; text-anchor:middle; dominant-baseline:central; pointer-events:none; }
+        .node .sm          { font-size:10.5px; fill:#8b949e; }
+        .boot rect         { fill:#3a3f4a; stroke:#8b949e; stroke-width:2; }
+        .hub  polygon      { fill:#3a1f4a; stroke:#ce6cf0; stroke-width:2; }
+        .kta  rect         { fill:#0d1d3a; stroke:#4c8bf5; stroke-width:2; }
+        .vpt  rect         { fill:#3a230d; stroke:#f59f4c; stroke-width:2; }
+        .menu rect         { fill:#142b1a; stroke:#56d364; stroke-width:2; }
+        .e-s  { stroke:#9ad06b; stroke-width:2;   fill:none; marker-end:url(#ar-s); }
+        .e-u  { stroke:#58a6ff; stroke-width:1.6; stroke-dasharray:6 4; fill:none; marker-end:url(#ar-u); }
+        .e-p  { stroke:#f59f4c; stroke-width:1.6; stroke-dasharray:2 4; fill:none; marker-end:url(#ar-p); }
+        .e-b  { stroke:#ce6cf0; stroke-width:2.4; fill:none; marker-end:url(#ar-b); }
+        .tk-s { stroke:#9ad06b; stroke-width:2;   fill:none; }
+        .tk-b { stroke:#ce6cf0; stroke-width:2.4; fill:none; }
+        .ann  { font-size:10px; fill:#8b949e; }
+        .ann-r{ font-size:10px; fill:#8b949e; text-anchor:end; }
+        .gb-kta { fill:rgba(13,29,58,.55);  stroke:#1d3a6e; stroke-dasharray:4 4; }
+        .gb-vpt { fill:rgba(58,35,13,.55); stroke:#6b4218; stroke-dasharray:4 4; }
+        .gl   { font-size:11px; fill:#cdd9e5; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
+        .rb   { fill:none; stroke:#58a6ff; stroke-width:1.4; stroke-dasharray:3 3; opacity:.85; }
+      </style>
+    </defs>
+
+    <!-- cluster backgrounds -->
+    <rect class="gb-kta" x="40"  y="370" width="440"  height="620" rx="10"/>
+    <text class="gl" x="60"  y="392">KTA · product showroom</text>
+
+    <rect class="gb-vpt" x="520" y="370" width="1085" height="720" rx="10"/>
+    <text class="gl" x="540" y="392">VPT · Virtual Plant Tour (factory walkthrough)</text>
+
+    <!-- ── BOOT ── -->
+    <g class="node boot">
+      <rect x="720" y="40" width="200" height="56" rx="6"/>
+      <text x="820" y="60">Initialization</text>
+      <text x="820" y="78" class="sm">startup · mode selector</text>
+    </g>
+
+    <!-- boot trunk: vertical drop, horizontal bar, two descents -->
+    <path class="tk-b" d="M820,96 V190"/>
+    <path class="tk-b" d="M260,190 H1320"/>
+    <path class="e-b"  d="M260,190 V228"/>
+    <path class="e-b"  d="M1320,190 V228"/>
+
+    <!-- boot labels in clear side zones -->
+    <text class="ann" x="60"  y="186">KTA mode (currently active)</text>
+    <text class="ann" x="1340" y="186">VPT mode</text>
+
+    <!-- ── HUBS ── -->
+    <g class="node hub" transform="translate(260,278)">
+      <polygon points="0,-48 108,0 0,48 -108,0"/>
+      <text x="0" y="-8">_Main</text>
+      <text x="0" y="12" class="sm">KTA showroom hub</text>
+    </g>
+
+    <g class="node hub" transform="translate(1320,278)">
+      <polygon points="0,-48 108,0 0,48 -108,0"/>
+      <text x="0" y="-8">_VPT</text>
+      <text x="0" y="12" class="sm">VPT tour hub</text>
+    </g>
+
+    <!-- ── KTA scenes ── -->
+    <g class="node kta">
+      <rect x="160" y="448" width="200" height="52" rx="6"/>
+      <text x="260" y="462">Lobby</text>
+      <text x="260" y="480" class="sm">entrance · navigation hub</text>
+    </g>
+
+    <g class="node kta">
+      <rect x="80"  y="606" width="160" height="52" rx="6"/>
+      <text x="160" y="620">Commercial</text>
+      <text x="160" y="638" class="sm">commercial products wing</text>
+    </g>
+
+    <g class="node kta">
+      <rect x="280" y="606" width="160" height="52" rx="6"/>
+      <text x="360" y="620">Residential</text>
+      <text x="360" y="638" class="sm">residential products wing</text>
+    </g>
+
+    <!-- _Main → Lobby -->
+    <path class="e-s" d="M260,326 V446"/>
+    <!-- Lobby → Commercial / Residential -->
+    <path class="tk-s" d="M260,500 V554"/>
+    <path class="tk-s" d="M160,554 H360"/>
+    <path class="e-s"  d="M160,554 V604"/>
+    <path class="e-s"  d="M360,554 V604"/>
+
+    <!-- "Enter VPT" callout — safely in KTA dead zone -->
+    <rect x="60" y="738" width="400" height="48" rx="6" fill="#0d1d26" stroke="#58a6ff" stroke-width="1.3" stroke-dasharray="4 3"/>
+    <text x="260" y="758" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="500">→ "Enter VPT" button in Lobby (UI trigger)</text>
+    <text x="260" y="774" font-size="10" fill="#8b949e" text-anchor="middle">hidden when VPT mode is disabled at build time</text>
+
+    <!-- Orphan note — safely in KTA dead zone -->
+    <rect x="60" y="800" width="400" height="66" rx="6" fill="#2a1a1a" stroke="#f85149" stroke-width="1.8"/>
+    <text x="260" y="822" font-size="11" fill="#ffd2cf" text-anchor="middle" font-weight="600">⚠ Orphan / temp scene</text>
+    <text x="260" y="840" font-size="10"  fill="#ffd2cf" text-anchor="middle">Temp-Commercial-PipeInsulation-Modular</text>
+    <text x="260" y="856" font-size="10"  fill="#ffd2cf" text-anchor="middle">not in build · no script references</text>
+
+    <!-- ── VPT entry chain ── -->
+    <g class="node vpt">
+      <rect x="540" y="448" width="240" height="52" rx="6"/>
+      <text x="660" y="462">00_WaitingRoom</text>
+      <text x="660" y="480" class="sm">access code gate</text>
+    </g>
+
+    <g class="node vpt">
+      <rect x="540" y="564" width="240" height="52" rx="6"/>
+      <text x="660" y="578">01_TourEntrance</text>
+      <text x="660" y="596" class="sm">tour intro · entry vestibule</text>
+    </g>
+
+    <g class="node vpt">
+      <rect x="540" y="682" width="240" height="52" rx="6"/>
+      <text x="660" y="696">01_StartingRoom</text>
+      <text x="660" y="714" class="sm" fill="#ff8a82">⚠ loads via fallback (dev TODO)</text>
+    </g>
+
+    <!-- _VPT → 00_WaitingRoom -->
+    <path class="tk-s" d="M1320,326 V422"/>
+    <path class="tk-s" d="M660,422 H1320"/>
+    <path class="e-s"  d="M660,422 V446"/>
+
+    <!-- chain: WaitingRoom → TourEntrance → StartingRoom -->
+    <path class="e-s" d="M660,500 V562"/>
+    <path class="e-s" d="M660,616 V680"/>
+
+    <!-- small annotation in clear dead space -->
+    <text class="ann" x="808" y="540">access code unlocks → TourEntrance</text>
+
+    <!-- ── VPT tour rooms (snake) ── -->
+    <g class="node vpt">
+      <rect x="820"  y="820" width="118" height="44" rx="6"/>
+      <text x="879"  y="846">02 Binder Room</text>
+    </g>
+    <g class="node vpt">
+      <rect x="974"  y="820" width="118" height="44" rx="6"/>
+      <text x="1033" y="846">03 Batch House</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1128" y="820" width="118" height="44" rx="6"/>
+      <text x="1187" y="846">04 Furnace</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1282" y="820" width="118" height="44" rx="6"/>
+      <text x="1341" y="846">05 Fiberizing</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1436" y="820" width="142" height="44" rx="6"/>
+      <text x="1507" y="846">06 Curing &amp; Cooling</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1436" y="938" width="142" height="44" rx="6"/>
+      <text x="1507" y="964">07 Cutting</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1282" y="938" width="118" height="44" rx="6"/>
+      <text x="1341" y="964">08 Packaging</text>
+    </g>
+    <g class="node vpt">
+      <rect x="1128" y="938" width="118" height="44" rx="6"/>
+      <text x="1187" y="964">09 Warehouse</text>
+    </g>
+
+    <!-- StartingRoom → 02 BinderRoom (L-shape) -->
+    <path class="e-p" d="M660,734 V782"/>
+    <path class="e-p" d="M660,782 H879"/>
+    <path class="e-p" d="M879,782 V818"/>
+
+    <!-- top row: 02→03→04→05→06 -->
+    <path class="e-p" d="M938,842 H972"/>
+    <path class="e-p" d="M1092,842 H1126"/>
+    <path class="e-p" d="M1246,842 H1280"/>
+    <path class="e-p" d="M1400,842 H1434"/>
+
+    <!-- 06 → 07 (vertical right side) -->
+    <path class="e-p" d="M1507,864 V936"/>
+
+    <!-- bottom row: 07→08→09 -->
+    <path class="e-p" d="M1436,960 H1402"/>
+    <path class="e-p" d="M1282,960 H1248"/>
+
+    <!-- Facility Map bracket + menu -->
+    <path class="rb" d="M540,1038 V1028 H1578 V1038"/>
+    <text font-size="10" fill="#58a6ff" text-anchor="middle" x="1059" y="1021">Facility Map menu — UI shortcut to any VPT room</text>
+    <g class="node menu">
+      <rect x="910" y="1050" width="298" height="40" rx="6"/>
+      <text x="1059" y="1074">Facility Map menu</text>
+    </g>
+    <path class="e-u" d="M1059,1050 V1040"/>
+
+  </svg>
+
+  <!-- ── Abbreviations ── -->
+  <div style="margin-top:28px; max-width:720px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#8b949e;
+                font-weight:600;border-bottom:1px solid #2a3142;padding-bottom:5px;margin-bottom:14px;">
+      Abbreviations &amp; terms
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tbody>
+        <tr>
+          <td style="padding:7px 14px 7px 0;color:#cbe0ff;font-weight:600;white-space:nowrap;vertical-align:top;">KTA</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">Knauf Training Academy — the product showroom mode. Players explore Knauf insulation product ranges in a virtual showroom environment.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#ffe2c2;font-weight:600;white-space:nowrap;vertical-align:top;">VPT</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">Virtual Plant Tour — the factory walkthrough mode. Players follow the real Knauf glass-wool manufacturing process from raw materials through to finished product.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">XR portal</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">An in-VR doorway. Walking through it transports the player to the next space — the primary navigation method in the factory tour.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Facility Map</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">An in-VR menu that lets players jump directly to any factory room without walking through all the rooms in sequence.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Boot</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">The app startup phase — runs before any visible content loads. It checks a configuration switch to decide which mode (KTA or VPT) to launch.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Master hub</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">A background scene (shown as diamonds) that acts as a traffic controller — it doesn't contain visible environments itself, but manages which room loads next and coordinates transitions.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#f85149;font-weight:600;white-space:nowrap;vertical-align:top;">⚠ Orphan scene</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">A scene that exists in the project but is not connected to any part of the app — not reachable by players and not included in any build. Flagged for cleanup.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Connected services ── -->
+  <div style="margin-top:28px; max-width:720px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#8b949e;
+                font-weight:600;border-bottom:1px solid #2a3142;padding-bottom:5px;margin-bottom:14px;">
+      Connected external services
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tbody>
+        <tr>
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Analytics</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">Mixpanel tracks how players move through the experience — which rooms they visit, how long they spend in each, and where they exit. This data is used to measure engagement and identify drop-off points without requiring any action from the player.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Access code gate</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">The factory tour requires a valid access code before entry. Codes are validated by a server-side system, so they can be issued, changed, or revoked at any time without releasing a new version of the app.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">Remote content</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">Factory tour rooms are downloaded to the headset from Knauf's cloud servers rather than bundled inside the app. This keeps the app install size small and means room content (models, textures, narration) can be updated without going through the app store.</td>
+        </tr>
+        <tr style="border-top:1px solid #1c2230;">
+          <td style="padding:7px 14px 7px 0;color:#cdd9e5;font-weight:600;white-space:nowrap;vertical-align:top;">VR hardware</td>
+          <td style="padding:7px 0;color:#cdd9e5;line-height:1.55;">Built exclusively for Meta Quest. The app uses Meta's XR SDK for controller tracking, haptic feedback (controller vibration on interactions), and in-editor simulation for testing without a physical headset.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Known issue ── -->
+  <div style="margin-top:24px; max-width:720px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#8b949e;
+                font-weight:600;border-bottom:1px solid #2a3142;padding-bottom:5px;margin-bottom:14px;">
+      Known issue
+    </div>
+    <div style="background:#1a0d0d;border:1px solid #5d1a17;border-radius:8px;padding:14px 18px;font-size:13px;line-height:1.65;color:#cdd9e5;">
+      <strong style="color:#ffd2cf;">⚠ 01_StartingRoom — missing from remote content delivery.</strong>
+      This is the main entry point of the factory tour and every player passes through it, but it was
+      never added to the remote content system. Unlike all other tour rooms, it cannot be updated without
+      a full app release. The development team has flagged this as a known gap to be resolved in a future update.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
