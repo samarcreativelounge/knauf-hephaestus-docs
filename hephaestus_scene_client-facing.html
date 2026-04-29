@@ -41,6 +41,29 @@
   .tab-btn.active { background:#1f3358; border-color:#4c8bf5; color:#cbe0ff; }
   .tab-panel { display:none; }
   .tab-panel.active { display:block; }
+
+  .tab-btn.questions { color:#f85149; border-color:#5d1a17; background:#1a0a09; }
+  .tab-btn.questions:hover { border-color:#f85149; color:#ffd2cf; background:#2a0f0d; }
+  .tab-btn.questions.active { background:#3b0f0d; border-color:#f85149; color:#ffd2cf; }
+  /* questions & integrations panel styles */
+  .q-section { margin-bottom:32px; }
+  .q-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
+    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; margin:0 0 16px; }
+  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22; padding:16px 18px; margin-bottom:12px; }
+  .q-card.flag-red   { border-left:3px solid #f85149; }
+  .q-card.flag-amber { border-left:3px solid #f59f4c; }
+  .q-card.flag-blue  { border-left:3px solid #4c8bf5; }
+  .q-card.flag-grey  { border-left:3px solid #4a5168; }
+  .q-tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px;
+    font-weight:600; letter-spacing:.4px; margin-bottom:8px; }
+  .q-tag.red   { background:rgba(248,81,73,.12);  color:#f85149;  border:1px solid rgba(248,81,73,.3);  }
+  .q-tag.amber { background:rgba(245,159,76,.1);  color:#f59f4c;  border:1px solid rgba(245,159,76,.25); }
+  .q-tag.blue  { background:rgba(76,139,245,.1);  color:#4c8bf5;  border:1px solid rgba(76,139,245,.25); }
+  .q-tag.grey  { background:rgba(74,81,104,.2);   color:#8b949e;  border:1px solid rgba(74,81,104,.4); }
+  .q-q { font-size:14px; font-weight:500; color:#e6edf3; margin:0 0 6px; line-height:1.45; }
+  .q-context { font-size:12px; color:#8b949e; margin:0; line-height:1.6; }
+  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11px; color:#cbe0ff; }
+  .q-context code.warn { color:#ffd2cf; }
 </style>
 </head>
 <body>
@@ -67,7 +90,9 @@
 
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showTab('scene',this)">Scene Flow</button>
-    <button class="tab-btn" onclick="showTab('delivery',this)">Content Delivery</button>
+    <button class="tab-btn" onclick="showTab('ccd',this)">Addressables &amp; CCD Pipeline</button>
+      <button class="tab-btn" onclick="showTab('integrations',this)">Outside Integrations</button>
+      <button class="tab-btn questions" onclick="showTab('questions',this)">Questions</button>
   </div>
 
   <!-- ══ SCENE FLOW TAB ══ -->
@@ -275,7 +300,7 @@
   </div><!-- /tab-scene -->
 
   <!-- ══ CONTENT DELIVERY TAB ══ -->
-  <div id="tab-delivery" class="tab-panel">
+  <div id="tab-ccd" class="tab-panel">
   <div style="max-width:900px; margin-top:4px;">
 
     <p style="font-size:13px;color:#cdd9e5;line-height:1.65;margin:0 0 24px;">
@@ -376,7 +401,209 @@
 
     </svg>
   </div>
-  </div><!-- /tab-delivery -->
+  </div><!-- /tab-ccd -->
+
+<div id="tab-integrations" class="tab-panel">
+  <div style="max-width:860px; margin-top:4px;">
+
+    <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
+      All external services and SDKs this project connects to at runtime or during the build pipeline.
+      None of these are optional — removing any one would require code changes.
+    </p>
+
+    <!-- ── Unity Gaming Services ── -->
+    <div class="q-section">
+      <div class="q-section-title">Unity Gaming Services</div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY CCD</span>
+        <p class="q-q">Cloud Content Delivery — remote CDN for VPT scene bundles</p>
+        <p class="q-context">
+          Hosts the compressed Addressable asset bundles for all 9 VPT factory rooms
+          (<code>01_TourEntrance</code> through <code>09_WarehouseAndDistribution</code>).
+          On each app launch the headset fetches a remote catalog, compares content hashes,
+          and downloads only changed bundles — no App Lab submission needed for content updates.
+          Bundles are cached on-device so no network connection is required during play.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY AUTHENTICATION</span>
+        <p class="q-q">Anonymous sign-in — silent session token for Cloud Code access</p>
+        <p class="q-context">
+          Runs automatically when the player enters <code>00_WaitingRoom</code>.
+          No login screen is shown — the SDK signs the player in anonymously and returns a session
+          token. That token is required to authorise any calls to Unity Cloud Code.
+          Without it, the access code gate cannot function.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY CLOUD CODE</span>
+        <p class="q-q">Server-side access code validation — <code>CheckAccessCode</code> module</p>
+        <p class="q-context">
+          The player types a code on the in-VR keypad in the WaitingRoom. That code is sent
+          server-side to the <code>VPTAccessService/CheckAccessCode</code> Cloud Code module,
+          which returns <code>true</code> or <code>false</code>. No validation logic lives on
+          the device — codes can be managed without rebuilding the app.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">UNITY BUILD AUTOMATION</span>
+        <p class="q-q">CI/CD pipeline — automated Addressables build and CCD upload</p>
+        <p class="q-context">
+          <code>CloudBuildConfigurator.cs</code> reads the <code>CLOUD_PROFILE_NAME</code>
+          environment variable set in Unity Build Automation to determine which CCD bucket
+          to target. When a build is triggered, Addressables bundles are automatically
+          packaged and uploaded to CCD as part of the pipeline — no manual upload step required.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── Third-party ── -->
+    <div class="q-section">
+      <div class="q-section-title">Third-party services</div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">MIXPANEL</span>
+        <p class="q-q">Analytics — training event tracking across KTA and VPT</p>
+        <p class="q-context">
+          Tracks the following events: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
+          <code>Level_Started</code>, <code>Level_Completed</code>, <code>Level_Exited</code>,
+          <code>Module_Entered</code>, <code>Module_Exited</code>, plus timed event durations.
+          All tracking is handled by <code>AnalyticsManager.cs</code>. Data is sent to the
+          Mixpanel project associated with the app's API key — no on-device storage of analytics data.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── Hardware SDK ── -->
+    <div class="q-section">
+      <div class="q-section-title">Hardware SDK</div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">META XR SDK</span>
+        <p class="q-q">Quest controller haptics and in-editor VR simulation</p>
+        <p class="q-context">
+          Two Meta XR packages are included: <code>com.meta.xr.sdk.haptics</code> (67.0.0)
+          for controller vibration feedback during interactions, and
+          <code>com.meta.xr.simulator</code> (81.0.0) for testing the experience inside
+          the Unity editor without a physical headset. Neither package communicates with
+          an external server at runtime — both are local device SDKs.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  </div><!-- /tab-integrations -->
+
+<div id="tab-questions" class="tab-panel">
+  <div style="max-width:860px; margin-top:4px;">
+
+    <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
+      The items below are open questions surfaced from a technical review of the Unity project.
+      Each one represents either a known gap, an assumption baked into the codebase that needs
+      client confirmation, or a decision that will affect future maintenance and updates.
+    </p>
+
+    <!-- ── CRITICAL ── -->
+    <div class="q-section">
+      <div class="q-section-title">Critical — needs resolution before launch</div>
+
+      <div class="q-card flag-red">
+        <span class="q-tag red">⚠ ORPHAN SCENE</span>
+        <p class="q-q">01_StartingRoom is not in the Addressable/CCD system. Was this intentional, or should it be migrated?</p>
+        <p class="q-context">
+          Every other VPT room (02–09) is hosted on Unity CCD and can be updated without an App Lab submission.
+          <code class="warn">01_StartingRoom</code> is missing from the Addressable group entirely — the code falls back to
+          <code class="warn">SceneManager.LoadSceneAsync</code>, loading it directly from the APK. This means any change
+          to that scene requires a full binary rebuild and store review. The script
+          <code class="warn">StartingRoomAditivePortal.cs</code> is explicitly marked <code>TODO / temp</code> in the codebase.
+          If this is a permanent scene, it should be added to the Addressable group so it can be updated remotely like its siblings.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── CONTENT & ACCESS ── -->
+    <div class="q-section">
+      <div class="q-section-title">Content &amp; access management</div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">ACCESS CODES</span>
+        <p class="q-q">What is the intended lifecycle of VPT access codes — single-use, time-limited, or permanent?</p>
+        <p class="q-context">
+          The Cloud Code module <code>CheckAccessCode</code> validates a typed code server-side and returns true/false.
+          No expiry or usage-count logic is visible in the project bindings. If codes are meant to be
+          single-use (e.g. issued per training session) or time-limited (e.g. valid for 30 days), that logic
+          needs to be built into the Cloud Code module. Who currently manages issuing and revoking codes,
+          and through what interface?
+        </p>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">KTA ACCESS</span>
+        <p class="q-q">Is the KTA showroom intentionally open to anyone with the app installed, or should it also have an access gate?</p>
+        <p class="q-context">
+          The access code gate only exists in the VPT flow (<code>00_WaitingRoom</code>). The KTA showroom
+          (Lobby → Commercial / Residential) has no equivalent authentication step — any headset with
+          the app can explore it freely. If the KTA content is meant to be demo-only or partner-facing,
+          a similar gate should be added. If it's intentionally open, no action is needed.
+        </p>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">CCD DEPLOYMENT</span>
+        <p class="q-q">Is there a staging vs. production CCD environment, and who approves content pushes to production?</p>
+        <p class="q-context">
+          The <code>CloudBuildConfigurator.cs</code> script reads a <code>CLOUD_PROFILE_NAME</code> environment variable
+          set in Unity Build Automation to determine which CCD bucket to target. It's not clear from the
+          project whether a staging bucket exists for testing content updates before they go live.
+          A bad push to the production bucket would affect every headset on next launch.
+          Who owns the CCD project credentials and what is the release approval process?
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── ANALYTICS & REPORTING ── -->
+    <div class="q-section">
+      <div class="q-section-title">Analytics &amp; reporting</div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">ANALYTICS SCOPE</span>
+        <p class="q-q">Are the current Mixpanel events sufficient, or are there additional training KPIs the client needs?</p>
+        <p class="q-context">
+          Currently tracked: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
+          <code>Level_Started</code>, <code>Level_Completed</code>, <code>Level_Exited</code>,
+          <code>Module_Entered</code>, <code>Module_Exited</code>, plus timed events.
+          Common training KPIs that are <em>not</em> currently tracked include: access code failure
+          rate, time spent per factory room, completion rates by headset model or firmware version,
+          and whether players are using the Facility Map shortcut vs. walking linearly through portals.
+          Should any of these be added?
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">ANONYMOUS AUTH</span>
+        <p class="q-q">Is anonymous sign-in the intended long-term authentication model, or will users eventually have named accounts?</p>
+        <p class="q-context">
+          Unity Authentication is currently used in anonymous mode — a silent session token is created
+          on each launch, purely to authorise Cloud Code calls. There is no persistent player identity
+          across sessions or headsets. If the client later wants per-user training records, completion
+          certificates, or leaderboards, the auth model would need to be upgraded to named accounts.
+          Is anonymous auth the intended long-term approach?
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  </div><!-- /tab-questions -->
 
 </div>
 <script>
