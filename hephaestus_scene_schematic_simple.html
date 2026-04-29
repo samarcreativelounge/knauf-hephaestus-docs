@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Knauf VR Training Academy — Scene Flow</title>
+<style>
+  *, *::before, *::after { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:#0e1116; color:#e6edf3;
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+
+  /* ── scrollable page — panel is a fixed overlay ── */
+  #page { padding:24px; max-width:2200px; transition:padding-right .22s ease; }
+  #page.panel-open { padding-right:384px; }
+
+  #page h1  { font-size:19px; margin:0 0 3px; font-weight:600; }
+  #page .sub{ font-size:12px; color:#8b949e; margin-bottom:12px; }
+
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; font-size:11px; color:#8b949e; }
+  .legend .sw { display:inline-flex; align-items:center; gap:5px; }
+  .legend .dot { width:10px; height:10px; border-radius:2px; display:inline-block; border:1px solid; }
+  .legend .ln  { width:18px; height:0; border-top:2px solid currentColor; }
+
+  svg { display:block; width:100%; height:auto;
+    background:radial-gradient(ellipse at 50% 0%,#131922 0%,#0a0d12 80%);
+    border:1px solid #2a3142; border-radius:8px; }
+
+  /* clickable nodes */
+  .scene-node { cursor:pointer; }
+  .scene-node .hit { fill:transparent; }
+  .scene-node:hover rect, .scene-node:hover polygon { filter:brightness(1.3); }
+  .scene-node.active rect  { stroke-width:3; filter:brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,.25)); }
+  .scene-node.active polygon { stroke-width:3; filter:brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,.25)); }
+
+  /* ── inspector panel — fixed right-side overlay ── */
+  #panel { position:fixed; top:0; right:0; width:360px; height:100vh;
+    transform:translateX(100%); transition:transform .22s ease;
+    background:#161b22; border-left:1px solid #2a3142;
+    display:flex; flex-direction:column; z-index:200; }
+  #panel.open { transform:translateX(0); }
+
+  #ph { padding:14px 16px 12px; border-bottom:1px solid #2a3142; flex-shrink:0; position:relative; }
+  #ph h2 { margin:0 28px 2px 0; font-size:15px; font-weight:600; }
+  #ph .ph-sub { font-size:11px; color:#8b949e; }
+  #ph-close { position:absolute; right:12px; top:12px; background:none; border:none; color:#8b949e;
+    font-size:17px; cursor:pointer; padding:2px 5px; border-radius:4px; line-height:1; }
+  #ph-close:hover { background:#2a3142; color:#e6edf3; }
+
+  #pb { padding:14px 16px; overflow-y:auto; flex:1; font-size:13px; line-height:1.55; }
+  #pb h3 { font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:#8b949e;
+    margin:18px 0 7px; font-weight:600; border-bottom:1px solid #1c2230; padding-bottom:4px; }
+  #pb h3:first-child { margin-top:0; }
+
+  .plain { font-size:13px; color:#cdd9e5; margin:0 0 6px; line-height:1.6; }
+  .tech  { font-size:11.5px; color:#8b949e; margin:0; line-height:1.55; }
+
+  code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11px; color:#cbe0ff; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10.5px;
+    border:1px solid #2a3142; background:#1c2230; color:#8b949e; margin:2px 3px 2px 0; }
+  .pill.boot { color:#cdd2dc; border-color:#4a5168; background:#252c3d; }
+  .pill.kta  { color:#cbe0ff; border-color:#1f3358; background:#0d1d3a; }
+  .pill.vpt  { color:#ffe2c2; border-color:#583a1f; background:#3a230d; }
+  .pill.warn { color:#ffd2cf; border-color:#5d1a17; background:#3b0f0d; }
+  .pill.ok   { color:#c8f0d2; border-color:#1f4a26; background:#0d2614; }
+  .pill.hub  { color:#f4d8ff; border-color:#4a2060; background:#3a1f4a; }
+
+  .trans-item { padding:7px 9px; margin:5px 0; border:1px solid #2a3142; border-radius:6px;
+    background:#1c2230; }
+  .ti-row { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+  .ti-name { font-size:12px; font-weight:500; color:#e6edf3; }
+  .ti-via  { font-size:10.5px; color:#5a647a; margin-top:2px; }
+  .ti-label{ font-size:10.5px; color:#8b949e; }
+
+  .script-item { padding:5px 8px; margin:4px 0; border:1px solid #2a3142; border-radius:5px;
+    background:#1c2230; font-size:11px; }
+  .si-name { color:#cbe0ff; font-weight:500; }
+  .si-what { color:#8b949e; margin-top:2px; }
+  .si-path { color:#5a647a; font-size:10px; margin-top:1px; }
+
+  .placeholder { color:#8b949e; font-style:italic; text-align:center; padding:32px 0; }
+
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 10px; }
+  .kv .k { color:#8b949e; white-space:nowrap; font-size:12px; }
+  .kv .v { color:#e6edf3; font-size:12px; word-break:break-all; }
+
+  /* ── below-SVG notes section ── */
+  .notes { margin-top:28px; }
+  .notes h2 { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
+    margin:24px 0 8px; font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; }
+  .notes p  { font-size:13px; line-height:1.65; color:#cdd9e5; margin:0; }
+  .notes code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11.5px; color:#cbe0ff; }
+  table.files { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px; }
+  table.files th, table.files td { padding:6px 10px; text-align:left; border-bottom:1px solid #2a3142; }
+  table.files th { color:#8b949e; font-weight:600; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; background:#161b22; }
+  table.files td.path { color:#cbe0ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; }
+  table.files tr.kta  td:first-child { color:#cbe0ff; }
+  table.files tr.vpt  td:first-child { color:#ffe2c2; }
+  table.files tr.boot td:first-child { color:#cdd2dc; }
+  table.files tr.hub  td:first-child { color:#f4d8ff; }
+  table.files tr.warn td.path { color:#ffd2cf; }
+  table.files tr:hover td { background:rgba(255,255,255,.025); }
+
+  /* ── tab switcher ── */
+  .tab-bar { display:flex; gap:6px; margin:0 0 14px; }
+  .tab-btn { padding:6px 16px; border-radius:6px; border:1px solid #2a3142; background:#161b22;
+    color:#8b949e; font-size:12px; font-weight:500; cursor:pointer; transition:all .15s; }
+  .tab-btn:hover { border-color:#4a5168; color:#cdd9e5; }
+  .tab-btn.active { background:#1f3358; border-color:#4c8bf5; color:#cbe0ff; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* ── questions tab ── */
+  .q-section { margin-bottom:32px; }
+  .q-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
+    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; margin:0 0 16px; }
+  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22;
+    padding:16px 18px; margin-bottom:12px; }
+  .q-card.flag-red   { border-left:3px solid #f85149; }
+  .q-card.flag-amber { border-left:3px solid #f59f4c; }
+  .q-card.flag-blue  { border-left:3px solid #4c8bf5; }
+  .q-card.flag-grey  { border-left:3px solid #4a5168; }
+  .q-tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px;
+    font-weight:600; letter-spacing:.4px; margin-bottom:8px; }
+  .q-tag.red   { background:rgba(248,81,73,.12);  color:#f85149;  border:1px solid rgba(248,81,73,.3);  }
+  .q-tag.amber { background:rgba(245,159,76,.1);  color:#f59f4c;  border:1px solid rgba(245,159,76,.25); }
+  .q-tag.blue  { background:rgba(76,139,245,.1);  color:#4c8bf5;  border:1px solid rgba(76,139,245,.25); }
+  .q-tag.grey  { background:rgba(74,81,104,.2);   color:#8b949e;  border:1px solid rgba(74,81,104,.4); }
+  .q-q { font-size:14px; font-weight:500; color:#e6edf3; margin:0 0 6px; line-height:1.45; }
+  .q-context { font-size:12px; color:#8b949e; margin:0; line-height:1.6; }
+  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11px; color:#cbe0ff; }
+  .q-context code.warn { color:#ffd2cf; }
+</style>
+</head>
+<body>
+<div id="page">
+    <h1>Knauf VR Training Academy — scene flow</h1>
+    <div class="sub">Meta Quest VR · Unity 2022.3.62f2 · two content modes (KTA / VPT) switched by a build-time toggle · <strong>click any scene box</strong> to inspect it</div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab('scene',this)">Scene Flow</button>
+      <button class="tab-btn" onclick="showTab('ccd',this)">Addressables &amp; CCD Pipeline</button>
+      <button class="tab-btn" onclick="showTab('questions',this)">Questions</button>
+    </div>
+
+    <div id="tab-scene" class="tab-panel active">
+    <div class="legend">
+      <span class="sw"><i class="dot" style="background:#3a3f4a;border-color:#8b949e"></i>Boot</span>
+      <span class="sw"><i class="dot" style="background:#3a1f4a;border-color:#ce6cf0;transform:rotate(45deg)"></i>Master hub</span>
+      <span class="sw"><i class="dot" style="background:#0d1d3a;border-color:#4c8bf5"></i>KTA scene</span>
+      <span class="sw"><i class="dot" style="background:#3a230d;border-color:#f59f4c"></i>VPT scene</span>
+      <span class="sw" style="color:#9ad06b"><span class="ln"></span>State machine</span>
+      <span class="sw" style="color:#58a6ff"><span class="ln" style="border-top-style:dashed"></span>UI trigger</span>
+      <span class="sw" style="color:#f59f4c"><span class="ln" style="border-top-style:dotted"></span>XR portal</span>
+      <span class="sw" style="color:#ce6cf0"><span class="ln"></span>Boot branch</span>
+      <span class="sw" style="color:#56d364"><i class="dot" style="background:rgba(86,211,100,.15);border-color:#56d364;box-shadow:0 0 5px rgba(86,211,100,.5)"></i>Addressable · local (in APK)</span>
+      <span class="sw" style="color:#00c8ff"><i class="dot" style="background:rgba(0,200,255,.12);border-color:#00c8ff;box-shadow:0 0 5px rgba(0,200,255,.55)"></i>Addressable · CCD (remote)</span>
+    </div>
+
+    <svg viewBox="0 0 1640 1120" xmlns="http://www.w3.org/2000/svg"
+         font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+      <defs>
+        <marker id="ar-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ad06b"/></marker>
+        <marker id="ar-u" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+        <marker id="ar-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f59f4c"/></marker>
+        <marker id="ar-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ce6cf0"/></marker>
+        <style>
+          .node text         { font-size:13px; fill:#e6edf3; text-anchor:middle; dominant-baseline:central; pointer-events:none; }
+          .node .sm          { font-size:10.5px; fill:#8b949e; }
+          .node .pt          { font-size:9px; fill:#7d8694; font-family:ui-monospace,monospace; }
+          .boot rect         { fill:#3a3f4a; stroke:#8b949e; stroke-width:2; }
+          .hub  polygon      { fill:#3a1f4a; stroke:#ce6cf0; stroke-width:2; }
+          .kta  rect         { fill:#0d1d3a; stroke:#4c8bf5; stroke-width:2; }
+          .vpt  rect         { fill:#3a230d; stroke:#f59f4c; stroke-width:2; }
+          .menu rect         { fill:#142b1a; stroke:#56d364; stroke-width:2; }
+          .e-s  { stroke:#9ad06b; stroke-width:2;   fill:none; marker-end:url(#ar-s); }
+          .e-u  { stroke:#58a6ff; stroke-width:1.6; stroke-dasharray:6 4; fill:none; marker-end:url(#ar-u); }
+          .e-p  { stroke:#f59f4c; stroke-width:1.6; stroke-dasharray:2 4; fill:none; marker-end:url(#ar-p); }
+          .e-b  { stroke:#ce6cf0; stroke-width:2.4; fill:none; marker-end:url(#ar-b); }
+          .tk-s { stroke:#9ad06b; stroke-width:2;   fill:none; }
+          .tk-b { stroke:#ce6cf0; stroke-width:2.4; fill:none; }
+          .ann  { font-size:10px; fill:#8b949e; }
+          .ann-r{ font-size:10px; fill:#8b949e; text-anchor:end; }
+          .gb-kta { fill:rgba(13,29,58,.55);  stroke:#1d3a6e; stroke-dasharray:4 4; }
+          .gb-vpt { fill:rgba(58,35,13,.55); stroke:#6b4218; stroke-dasharray:4 4; }
+          .gl   { font-size:11px; fill:#cdd9e5; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
+          .gf   { font-size:9.5px; fill:#7d8694; font-family:ui-monospace,monospace; }
+          .rb   { fill:none; stroke:#58a6ff; stroke-width:1.4; stroke-dasharray:3 3; opacity:.85; }
+          /* Addressable indicators */
+          .addr-local { filter: drop-shadow(0 0 5px rgba(86,211,100,.5)); }
+          .addr-ccd   { filter: drop-shadow(0 0 5px rgba(0,200,255,.55)); }
+        </style>
+      </defs>
+
+      <!-- cluster backgrounds -->
+      <rect class="gb-kta" x="40"  y="370" width="440"  height="620" rx="10"/>
+      <text class="gl" x="60"  y="392">KTA · product showroom</text>
+      <text class="gf" x="60"  y="407">Assets/_Project/Scenes/ · 5 scenes in build settings</text>
+
+      <rect class="gb-vpt" x="520" y="370" width="1085" height="720" rx="10"/>
+      <text class="gl" x="540" y="392">VPT · Virtual Plant Tour (factory walkthrough)</text>
+      <text class="gf" x="540" y="407">Assets/_Project/Scenes/VPT/ + /Rooms/ · 11 scenes in Addressables (2 local + 9 predownload)</text>
+
+      <!-- ── BOOT ── -->
+      <g class="node boot scene-node" data-scene="Initialization">
+        <rect x="720" y="40" width="200" height="66" rx="6"/>
+        <rect class="hit" x="720" y="40" width="200" height="66" rx="6"/>
+        <text x="820" y="57">Initialization</text>
+        <text x="820" y="74" class="sm">Initializer.cs · checks VPTSettings</text>
+        <text x="820" y="89" class="pt">Scenes/Initialization.unity</text>
+      </g>
+
+      <!-- boot trunk: vertical drop, horizontal bar, two descents -->
+      <path class="tk-b" d="M820,106 V190"/>
+      <path class="tk-b" d="M260,190 H1320"/>
+      <path class="e-b"  d="M260,190 V228"/>
+      <path class="e-b"  d="M1320,190 V228"/>
+
+      <!-- boot labels placed in CLEAR side zones, not over lines -->
+      <text class="ann" x="60"  y="186">KTA mode (currently active)</text>
+      <text class="ann" x="1340" y="186">VPT mode</text>
+
+      <!-- ── HUBS ── -->
+      <g class="node hub scene-node" data-scene="_Main" transform="translate(260,278)">
+        <polygon points="0,-48 108,0 0,48 -108,0"/>
+        <rect class="hit" x="-108" y="-48" width="216" height="96"/>
+        <text x="0" y="-12">_Main</text>
+        <text x="0" y="5"  class="sm">_MainStateManager</text>
+        <text x="0" y="20" class="pt">Scenes/_Main.unity</text>
+      </g>
+
+      <g class="node hub scene-node addr-local" data-scene="_VPT" transform="translate(1320,278)">
+        <polygon points="0,-48 108,0 0,48 -108,0"/>
+        <rect class="hit" x="-108" y="-48" width="216" height="96"/>
+        <text x="0" y="-12">_VPT</text>
+        <text x="0" y="5"  class="sm">_VPTRoomManager</text>
+        <text x="0" y="20" class="pt">VPT/_VPT.unity</text>
+      </g>
+
+      <!-- ── KTA scenes ── -->
+      <g class="node kta scene-node" data-scene="Lobby">
+        <rect x="160" y="448" width="200" height="62" rx="6"/>
+        <rect class="hit" x="160" y="448" width="200" height="62" rx="6"/>
+        <text x="260" y="465">Lobby</text>
+        <text x="260" y="482" class="sm">LobbyStateManager · entry hub</text>
+        <text x="260" y="497" class="pt">Scenes/Lobby.unity</text>
+      </g>
+
+      <g class="node kta scene-node" data-scene="Commercial">
+        <rect x="80"  y="606" width="160" height="60" rx="6"/>
+        <rect class="hit" x="80"  y="606" width="160" height="60" rx="6"/>
+        <text x="160" y="622">Commercial</text>
+        <text x="160" y="639" class="sm">build idx 2</text>
+        <text x="160" y="653" class="pt">Scenes/Commercial.unity</text>
+      </g>
+
+      <g class="node kta scene-node" data-scene="Residential">
+        <rect x="280" y="606" width="160" height="60" rx="6"/>
+        <rect class="hit" x="280" y="606" width="160" height="60" rx="6"/>
+        <text x="360" y="622">Residential</text>
+        <text x="360" y="639" class="sm">build idx 3</text>
+        <text x="360" y="653" class="pt">Scenes/Residential.unity</text>
+      </g>
+
+      <!-- _Main → Lobby -->
+      <path class="e-s" d="M260,326 V446"/>
+      <!-- Lobby → Commercial / Residential -->
+      <path class="tk-s" d="M260,510 V554"/>
+      <path class="tk-s" d="M160,554 H360"/>
+      <path class="e-s"  d="M160,554 V604"/>
+      <path class="e-s"  d="M360,554 V604"/>
+
+      <!-- "Enter VPT" note — safely in KTA dead zone, no lines pass through -->
+      <rect x="60" y="738" width="400" height="56" rx="6" fill="#0d1d26" stroke="#58a6ff" stroke-width="1.3" stroke-dasharray="4 3"/>
+      <text x="260" y="759" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="500">→ "Enter VPT" button on Lobby Main Menu (UI)</text>
+      <text x="260" y="777" font-size="10" fill="#8b949e" text-anchor="middle">gated by VPTSettings.IsEnabled · hidden in KTA-only builds</text>
+
+      <!-- Orphan note — safely in KTA dead zone -->
+      <rect x="60" y="810" width="400" height="80" rx="6" fill="#2a1a1a" stroke="#f85149" stroke-width="1.8"/>
+      <text x="260" y="830" font-size="11" fill="#ffd2cf" text-anchor="middle" font-weight="600">⚠ Orphan / temp scene</text>
+      <text x="260" y="848" font-size="10"   fill="#ffd2cf" text-anchor="middle">Temp-Commercial-PipeInsulation-Modular</text>
+      <text x="260" y="862" font-size="9.5"  fill="#ffd2cf" text-anchor="middle" font-family="ui-monospace,monospace">Scenes/Temp/Temp-Commercial-PipeInsulation-Modular.unity</text>
+      <text x="260" y="876" font-size="10"   fill="#ffd2cf" text-anchor="middle">not in build · not in Addressables · no script refs</text>
+
+      <!-- ── VPT entry chain ── -->
+      <g class="node vpt scene-node addr-local" data-scene="00_WaitingRoom">
+        <rect x="540" y="448" width="240" height="62" rx="6"/>
+        <rect class="hit" x="540" y="448" width="240" height="62" rx="6"/>
+        <text x="660" y="465">00_WaitingRoom</text>
+        <text x="660" y="482" class="sm">WaitingRoomStateMachine</text>
+        <text x="660" y="497" class="pt">VPT/Rooms/00_WaitingRoom.unity</text>
+      </g>
+
+      <g class="node vpt scene-node addr-ccd" data-scene="01_TourEntrance">
+        <rect x="540" y="564" width="240" height="62" rx="6"/>
+        <rect class="hit" x="540" y="564" width="240" height="62" rx="6"/>
+        <text x="660" y="581">01_TourEntrance</text>
+        <text x="660" y="598" class="sm">tour intro · access-code gate</text>
+        <text x="660" y="613" class="pt">VPT/Rooms/01_TourEntrance.unity</text>
+      </g>
+
+      <g class="node vpt scene-node" data-scene="01_StartingRoom">
+        <rect x="540" y="682" width="240" height="62" rx="6"/>
+        <rect class="hit" x="540" y="682" width="240" height="62" rx="6"/>
+        <text x="660" y="699">01_StartingRoom</text>
+        <text x="660" y="716" class="sm" fill="#ff8a82">⚠ NOT in any Addressable group</text>
+        <text x="660" y="731" class="pt">VPT/Rooms/01_StartingRoom.unity</text>
+      </g>
+
+      <!-- _VPT → 00_WaitingRoom: long horizontal trunk across the top of VPT cluster -->
+      <path class="tk-s" d="M1320,326 V422"/>
+      <path class="tk-s" d="M660,422 H1320"/>
+      <path class="e-s"  d="M660,422 V446"/>
+
+      <!-- chain: WaitingRoom → TourEntrance → StartingRoom -->
+      <path class="e-s" d="M660,510 V562"/>
+      <path class="e-s" d="M660,626 V680"/>
+
+      <!-- small edge annotations — placed to RIGHT in clear dead space -->
+      <text class="ann" x="808" y="540">access code unlocks → TourEntrance</text>
+      <text class="ann" x="808" y="658">StartingRoomAditivePortal.cs</text>
+      <text font-size="9.5" fill="#f85149" x="808" y="671">⚠ marked TODO/temp in source</text>
+
+      <!-- ── VPT tour rooms (snake) ── -->
+      <g class="node vpt scene-node addr-ccd" data-scene="02_BinderRoom">
+        <rect x="820"  y="820" width="118" height="48" rx="6"/>
+        <rect class="hit" x="820"  y="820" width="118" height="48" rx="6"/>
+        <text x="879"  y="838">02 BinderRoom</text>
+        <text x="879"  y="855" class="pt">02_BinderRoom</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="03_BatchHouse">
+        <rect x="974"  y="820" width="118" height="48" rx="6"/>
+        <rect class="hit" x="974"  y="820" width="118" height="48" rx="6"/>
+        <text x="1033" y="838">03 BatchHouse</text>
+        <text x="1033" y="855" class="pt">03_BatchHouse</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="04_Furnace">
+        <rect x="1128" y="820" width="118" height="48" rx="6"/>
+        <rect class="hit" x="1128" y="820" width="118" height="48" rx="6"/>
+        <text x="1187" y="838">04 Furnace</text>
+        <text x="1187" y="855" class="pt">04_Furnace</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="05_Fiberizing">
+        <rect x="1282" y="820" width="118" height="48" rx="6"/>
+        <rect class="hit" x="1282" y="820" width="118" height="48" rx="6"/>
+        <text x="1341" y="838">05 Fiberizing</text>
+        <text x="1341" y="855" class="pt">05_Fiberizing</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="06_CuringAndCooling">
+        <rect x="1436" y="820" width="142" height="48" rx="6"/>
+        <rect class="hit" x="1436" y="820" width="142" height="48" rx="6"/>
+        <text x="1507" y="838">06 Curing &amp; Cooling</text>
+        <text x="1507" y="855" class="pt">06_CuringAndCooling</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="07_Cutting">
+        <rect x="1436" y="938" width="142" height="48" rx="6"/>
+        <rect class="hit" x="1436" y="938" width="142" height="48" rx="6"/>
+        <text x="1507" y="956">07 Cutting</text>
+        <text x="1507" y="973" class="pt">07_Cutting</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="08_Packaging">
+        <rect x="1282" y="938" width="118" height="48" rx="6"/>
+        <rect class="hit" x="1282" y="938" width="118" height="48" rx="6"/>
+        <text x="1341" y="956">08 Packaging</text>
+        <text x="1341" y="973" class="pt">08_Packaging</text>
+      </g>
+      <g class="node vpt scene-node addr-ccd" data-scene="09_WarehouseAndDistribution">
+        <rect x="1128" y="938" width="118" height="48" rx="6"/>
+        <rect class="hit" x="1128" y="938" width="118" height="48" rx="6"/>
+        <text x="1187" y="956">09 Warehouse</text>
+        <text x="1187" y="973" class="pt">09_WarehouseAndDistribution</text>
+      </g>
+
+      <!-- StartingRoom → 02 BinderRoom (L-shape) -->
+      <path class="e-p" d="M660,744 V782"/>
+      <path class="e-p" d="M660,782 H879"/>
+      <path class="e-p" d="M879,782 V818"/>
+
+      <!-- top row: 02→03→04→05→06 -->
+      <path class="e-p" d="M938,844 H972"/>
+      <path class="e-p" d="M1092,844 H1126"/>
+      <path class="e-p" d="M1246,844 H1280"/>
+      <path class="e-p" d="M1400,844 H1434"/>
+
+      <!-- 06 → 07 (vertical right side) -->
+      <path class="e-p" d="M1507,868 V936"/>
+
+      <!-- bottom row: 07→08→09 -->
+      <path class="e-p" d="M1436,962 H1402"/>
+      <path class="e-p" d="M1282,962 H1248"/>
+
+      <!-- Facility Map bracket + menu -->
+      <path class="rb" d="M540,1038 V1028 H1578 V1038"/>
+      <text font-size="10" fill="#58a6ff" text-anchor="middle" x="1059" y="1021">Facility Map menu — UI jump to any VPT room</text>
+      <g class="node menu">
+        <rect x="910" y="1058" width="298" height="44" rx="6"/>
+        <text x="1059" y="1075">Facility Map menu</text>
+        <text x="1059" y="1091" class="sm">Map Toggle prefabs · UnityEvent → ScenePortalData</text>
+      </g>
+      <path class="e-u" d="M1059,1058 V1040"/>
+
+    </svg>
+
+  <!-- ══════════════════ NOTES / INDEX BELOW DIAGRAM ══════════════════ -->
+  <div class="notes">
+
+    <h2>Scene file index — all 18 scenes (paths under Assets/_Project/)</h2>
+    <table class="files">
+      <thead>
+        <tr><th>Mode</th><th>Scene</th><th>Unity path</th><th>Build index</th><th>Addressable group</th></tr>
+      </thead>
+      <tbody>
+        <tr class="boot"><td>Boot</td><td>Initialization</td><td class="path">Scenes/Initialization.unity</td><td>0</td><td>—</td></tr>
+        <tr class="hub"> <td>KTA master</td><td>_Main</td><td class="path">Scenes/_Main.unity</td><td>1</td><td>—</td></tr>
+        <tr class="kta"> <td>KTA</td><td>Lobby</td><td class="path">Scenes/Lobby.unity</td><td>4</td><td>—</td></tr>
+        <tr class="kta"> <td>KTA</td><td>Commercial</td><td class="path">Scenes/Commercial.unity</td><td>2</td><td>—</td></tr>
+        <tr class="kta"> <td>KTA</td><td>Residential</td><td class="path">Scenes/Residential.unity</td><td>3</td><td>—</td></tr>
+        <tr class="hub"> <td>VPT master</td><td>_VPT</td><td class="path">Scenes/VPT/_VPT.unity</td><td>—</td><td>VPT Local Scenes</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>00_WaitingRoom</td><td class="path">Scenes/VPT/Rooms/00_WaitingRoom.unity</td><td>—</td><td>VPT Local Scenes</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>01_TourEntrance</td><td class="path">Scenes/VPT/Rooms/01_TourEntrance.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt warn"><td>VPT ⚠</td><td>01_StartingRoom</td><td class="path">Scenes/VPT/Rooms/01_StartingRoom.unity</td><td>—</td><td>⚠ NOT in any Addressable group</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>02_BinderRoom</td><td class="path">Scenes/VPT/Rooms/02_BinderRoom.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>03_BatchHouse</td><td class="path">Scenes/VPT/Rooms/03_BatchHouse.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>04_Furnace</td><td class="path">Scenes/VPT/Rooms/04_Furnace.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>05_Fiberizing</td><td class="path">Scenes/VPT/Rooms/05_Fiberizing.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>06_CuringAndCooling</td><td class="path">Scenes/VPT/Rooms/06_CuringAndCooling.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>07_Cutting</td><td class="path">Scenes/VPT/Rooms/07_Cutting.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>08_Packaging</td><td class="path">Scenes/VPT/Rooms/08_Packaging.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="vpt"> <td>VPT</td><td>09_WarehouseAndDistribution</td><td class="path">Scenes/VPT/Rooms/09_WarehouseAndDistribution.unity</td><td>—</td><td>VPT Scenes (Predownload)</td></tr>
+        <tr class="warn"><td>Orphan</td><td>Temp-Commercial-PipeInsulation-Modular</td><td class="path">Scenes/Temp/Temp-Commercial-PipeInsulation-Modular.unity</td><td>—</td><td>— (not in build, not Addressable)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Addressable groups — scene-related</h2>
+    <table class="files">
+      <thead>
+        <tr><th>Group name</th><th>Type</th><th>Scenes assigned</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>VPT Local Scenes</td><td class="path">Local (ships in APK)</td><td>_VPT, 00_WaitingRoom</td></tr>
+        <tr><td>VPT Scenes</td><td class="path">Remote (Predownload label)</td><td>01_TourEntrance, 02–09 all rooms</td></tr>
+        <tr><td>Local Scenes</td><td class="path">Local</td><td>(KTA content — no Unity scene assets confirmed assigned)</td></tr>
+        <tr class="warn"><td>None</td><td class="path">—</td><td>01_StartingRoom — falls back to SceneManager.LoadSceneAsync</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Project overview</h2>
+    <p>
+      <strong>Knauf VR Training Academy</strong> is a Meta Quest VR application
+      (Android package <code>com.subvrisve.KnaufVRTrainingAcademy</code>, Unity 2022.3.62f2,
+      URP render pipeline). There is no web or desktop variant — it is Quest-only.
+      The app has two content modes in a single build:
+      <strong>KTA</strong> (Knauf Training Academy — the product showroom) and
+      <strong>VPT</strong> (Virtual Plant Tour — a walkthrough of a real Knauf glass-wool factory).
+      Which mode loads is controlled by a build-time editor toggle:
+      <code>VPTSettings.IsEnabled</code> in <code>Assets/Resources/VPTSettings.asset</code>
+      (currently <code>_isEnabled: 0</code> = KTA only).
+      The toggle is exposed in Unity under the menu bar item
+      <code>VPTConfiguration → Toggle VPT</code> via <code>Editor/VPTConfigurationEditor.cs</code>.
+      Flipping it also sets <code>IncludeInBuild</code> on every VPT Addressable group schema,
+      so KTA-only Quest APKs ship without factory tour content and stay small.
+    </p>
+    <p style="margin-top:10px;">
+      All scene transitions route through a single method:
+      <code>SceneLoader.LoadSceneAsync(ScenePortalData)</code> in
+      <code>Assets/_Project/Scripts/SceneManagement/SceneLoader.cs</code>.
+      Every load is <em>additive</em>. If the target scene has an Addressable address,
+      it uses the Addressables API; otherwise it falls back to
+      <code>SceneManager.LoadSceneAsync</code> (currently only <code>01_StartingRoom</code>
+      uses this fallback — flagged as a TODO). The XR camera rig lives in the
+      <code>Initialization</code> scene and persists across all loads.
+    </p>
+    <p style="margin-top:10px;">
+      The VPT factory tour follows the real Knauf manufacturing process in order:
+      Waiting Room → Tour Entrance → Starting Room → Binder Room → Batch House →
+      Furnace → Fiberizing → Curing &amp; Cooling → Cutting → Packaging →
+      Warehouse &amp; Distribution. Players can also jump to any room directly
+      via the in-VR Facility Map menu. Each room supports bidirectional portal
+      navigation (forward and back).
+    </p>
+
+    <h2>Key scripts — scene management</h2>
+    <table class="files">
+      <thead>
+        <tr><th>Script</th><th>Path</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Initializer.cs</td><td class="path">Scripts/SceneManagement/Initializer.cs</td><td>Boot: reads VPTSettings, loads _Main or _VPT</td></tr>
+        <tr><td>SceneLoader.cs</td><td class="path">Scripts/SceneManagement/SceneLoader.cs</td><td>Singleton: LoadSceneAsync(ScenePortalData) — Addressable-aware with SceneManager fallback</td></tr>
+        <tr><td>ScenePortalData.cs</td><td class="path">Scripts/SceneManagement/ScenePortalData.cs</td><td>ScriptableObject holding the scene address/reference for each portal destination</td></tr>
+        <tr><td>VPTSettings.cs</td><td class="path">Scripts/Utilities/VPTSettings.cs</td><td>ScriptableObject: _isEnabled flag (0 = KTA only, 1 = KTA + VPT)</td></tr>
+        <tr><td>VPTConfigurationEditor.cs</td><td class="path">Editor/VPTConfigurationEditor.cs</td><td>Editor tool: VPTConfiguration → Toggle VPT menu item; also flips Addressable group IncludeInBuild flags</td></tr>
+        <tr><td>StartingRoomAditivePortal.cs</td><td class="path">Scripts/Portal/StartingRoomAditivePortal.cs</td><td>⚠ TODO/temp: loads 01_StartingRoom via fallback on authorization event</td></tr>
+        <tr><td>Portal.cs</td><td class="path">Scripts/Portal/Portal.cs</td><td>Base portal class — XR walk-through portals that trigger scene loads</td></tr>
+        <tr><td>VPTPortalButton.cs</td><td class="path">Scripts/Portal/VPTPortalButton.cs</td><td>Hides the Enter VPT UI button in KTA-only builds</td></tr>
+      </tbody>
+    </table>
+
+  </div><!-- /notes -->
+  </div><!-- /tab-scene -->
+
+  <!-- ══════════════════ CCD PIPELINE TAB ══════════════════ -->
+  <div id="tab-ccd" class="tab-panel">
+  <svg viewBox="0 0 1640 820" xmlns="http://www.w3.org/2000/svg"
+       font-family="-apple-system,Segoe UI,Roboto,sans-serif"
+       style="background:radial-gradient(ellipse at 50% 0%,#131922 0%,#0a0d12 80%);border:1px solid #2a3142;border-radius:8px;">
+    <defs>
+      <marker id="ca-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4a5168"/></marker>
+      <marker id="ca-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00c8ff"/></marker>
+      <marker id="ca-grn"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#56d364"/></marker>
+      <marker id="ca-pur"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ce6cf0"/></marker>
+      <marker id="ca-org"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f59f4c"/></marker>
+    </defs>
+
+    <!-- column dividers -->
+    <line x1="530" y1="28" x2="530" y2="800" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
+    <line x1="1110" y1="28" x2="1110" y2="800" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
+
+    <!-- column headers -->
+    <text x="265"  y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">BUILD PIPELINE</text>
+    <text x="820"  y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">UNITY BACKEND SERVICES</text>
+    <text x="1375" y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">QUEST HEADSET · RUNTIME</text>
+
+    <!-- ══ BUILD COLUMN ══ -->
+    <rect x="40" y="34" width="460" height="76" rx="8" fill="#1a1f2e" stroke="#4a5168" stroke-width="1.5"/>
+    <text x="270" y="58"  text-anchor="middle" font-size="13" fill="#cdd9e5" font-weight="600">Unity Editor</text>
+    <text x="270" y="78"  text-anchor="middle" font-size="11" fill="#8b949e">Developer modifies scene content</text>
+    <text x="270" y="95"  text-anchor="middle" font-size="11" fill="#8b949e">Runs "Build Addressables"</text>
+
+    <path d="M270,110 V136" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+    <text x="285" y="130" font-size="9" fill="#4a5168">asset bundle output</text>
+    <path d="M140,140 H400 M140,140 V160 M400,140 V160" stroke="#4a5168" stroke-width="1" fill="none"/>
+
+    <!-- Local group box -->
+    <rect x="40" y="160" width="195" height="152" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1.8"/>
+    <text x="137" y="182" text-anchor="middle" font-size="11" fill="#56d364"  font-weight="600">VPT Local Scenes</text>
+    <text x="137" y="198" text-anchor="middle" font-size="10" fill="#8b949e">Ships bundled in APK</text>
+    <line x1="55"  y1="206" x2="220" y2="206" stroke="#1f4a26" stroke-width="1"/>
+    <text x="137" y="222" text-anchor="middle" font-size="10.5" fill="#c8f0d2">_VPT</text>
+    <text x="137" y="238" text-anchor="middle" font-size="10.5" fill="#c8f0d2">00_WaitingRoom</text>
+    <line x1="55"  y1="250" x2="220" y2="250" stroke="#1f4a26" stroke-width="1"/>
+    <text x="137" y="266" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">LoadPath: Local.LoadPath</text>
+    <text x="137" y="281" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">BuildPath: Local.BuildPath</text>
+    <text x="137" y="298" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">IncludeInBuild: true</text>
+
+    <path d="M137,312 V350" stroke="#56d364" stroke-width="1.5" fill="none" marker-end="url(#ca-grn)"/>
+    <rect x="40" y="350" width="195" height="42" rx="5" fill="#142b1a" stroke="#56d364" stroke-width="1"/>
+    <text x="137" y="366" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Bundled in APK</text>
+    <text x="137" y="382" text-anchor="middle" font-size="10" fill="#8b949e">always on device after install</text>
+
+    <!-- Predownload group box -->
+    <rect x="260" y="160" width="230" height="152" rx="6" fill="#061218" stroke="#00c8ff" stroke-width="1.8"/>
+    <text x="375" y="182" text-anchor="middle" font-size="11" fill="#00c8ff" font-weight="600">VPT Scenes · Predownload</text>
+    <text x="375" y="198" text-anchor="middle" font-size="10" fill="#8b949e">Uploaded to Unity CCD</text>
+    <line x1="275" y1="206" x2="475" y2="206" stroke="#0d2030" stroke-width="1"/>
+    <text x="375" y="222" text-anchor="middle" font-size="10.5" fill="#ffe2c2">01_TourEntrance</text>
+    <text x="375" y="238" text-anchor="middle" font-size="10.5" fill="#ffe2c2">02_BinderRoom · 03_BatchHouse</text>
+    <text x="375" y="254" text-anchor="middle" font-size="10.5" fill="#ffe2c2">04_Furnace · 05_Fiberizing</text>
+    <text x="375" y="270" text-anchor="middle" font-size="10.5" fill="#ffe2c2">06_CuringAndCooling · 07_Cutting</text>
+    <text x="375" y="286" text-anchor="middle" font-size="10.5" fill="#ffe2c2">08_Packaging · 09_Warehouse</text>
+    <text x="375" y="305" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">LoadPath: Unity CCD.LoadPath</text>
+
+    <path d="M490,236 H546" stroke="#00c8ff" stroke-width="1.8" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="492" y="226" font-size="9" fill="#00c8ff">upload bundles</text>
+    <text x="492" y="238" font-size="9" fill="#00c8ff">+ remote catalog</text>
+
+    <!-- UBA note -->
+    <rect x="40" y="420" width="460" height="60" rx="6" fill="#12161f" stroke="#2a3142" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="270" y="442" text-anchor="middle" font-size="10.5" fill="#8b949e" font-weight="500">Unity Build Automation (UBA) pipeline</text>
+    <text x="270" y="458" text-anchor="middle" font-size="10"   fill="#5a647a">CloudBuildConfigurator.cs reads CLOUD_PROFILE_NAME env var</text>
+    <text x="270" y="472" text-anchor="middle" font-size="10"   fill="#5a647a">sets CCD paths · triggers Addressables build · increments build number</text>
+
+    <!-- Update callout -->
+    <rect x="40" y="506" width="460" height="112" rx="8" fill="#061218" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="270" y="528" text-anchor="middle" font-size="12" fill="#00c8ff" font-weight="600">Content update — no APK rebuild needed</text>
+    <line x1="55" y1="536" x2="485" y2="536" stroke="#0d2030" stroke-width="1"/>
+    <text x="270" y="554" text-anchor="middle" font-size="10.5" fill="#cdd9e5">1. Developer changes a scene in Unity</text>
+    <text x="270" y="570" text-anchor="middle" font-size="10.5" fill="#cdd9e5">2. Runs Build Addressables → new bundle generated</text>
+    <text x="270" y="586" text-anchor="middle" font-size="10.5" fill="#cdd9e5">3. UBA uploads bundle to CCD · remote catalog updated</text>
+    <text x="270" y="602" text-anchor="middle" font-size="10.5" fill="#cdd9e5">4. Headsets pick up new version automatically at next launch</text>
+
+    <!-- ══ CENTER COLUMN — Unity CCD ══ -->
+    <rect x="548" y="34" width="548" height="348" rx="8" fill="#050e14" stroke="#00c8ff" stroke-width="2"/>
+    <text x="822" y="58"  text-anchor="middle" font-size="13" fill="#00c8ff"  font-weight="600">Unity CCD</text>
+    <text x="822" y="74"  text-anchor="middle" font-size="10" fill="#5a647a">(Cloud Content Delivery)</text>
+    <line x1="563" y1="82" x2="1080" y2="82" stroke="#0d2030" stroke-width="1"/>
+
+    <!-- Remote catalog -->
+    <rect x="563" y="92" width="248" height="68" rx="5" fill="#0d1d26" stroke="#00c8ff" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="687" y="114" text-anchor="middle" font-size="11" fill="#cdd9e5" font-weight="500">Remote Catalog</text>
+    <text x="687" y="130" text-anchor="middle" font-size="10" fill="#8b949e">manifest of all bundles + content hashes</text>
+    <text x="687" y="146" text-anchor="middle" font-size="9"  fill="#5a647a" font-family="ui-monospace,monospace">catalog.json · updated on each CCD build</text>
+
+    <!-- Scene bundles list -->
+    <rect x="828" y="92" width="253" height="274" rx="5" fill="#0d1d26" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="113" text-anchor="middle" font-size="11" fill="#cdd9e5" font-weight="500">Hosted Scene Bundles</text>
+    <line x1="843" y1="121" x2="1066" y2="121" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="139" text-anchor="middle" font-size="10.5" fill="#ffe2c2">01_TourEntrance</text>
+    <text x="954" y="157" text-anchor="middle" font-size="10.5" fill="#ffe2c2">02_BinderRoom</text>
+    <text x="954" y="175" text-anchor="middle" font-size="10.5" fill="#ffe2c2">03_BatchHouse</text>
+    <text x="954" y="193" text-anchor="middle" font-size="10.5" fill="#ffe2c2">04_Furnace</text>
+    <text x="954" y="211" text-anchor="middle" font-size="10.5" fill="#ffe2c2">05_Fiberizing</text>
+    <text x="954" y="229" text-anchor="middle" font-size="10.5" fill="#ffe2c2">06_CuringAndCooling</text>
+    <text x="954" y="247" text-anchor="middle" font-size="10.5" fill="#ffe2c2">07_Cutting</text>
+    <text x="954" y="265" text-anchor="middle" font-size="10.5" fill="#ffe2c2">08_Packaging</text>
+    <text x="954" y="283" text-anchor="middle" font-size="10.5" fill="#ffe2c2">09_WarehouseAndDistribution</text>
+    <line x1="843" y1="294" x2="1066" y2="294" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="312" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">each bundle versioned by content hash</text>
+    <text x="954" y="328" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">only changed bundles re-downloaded on update</text>
+    <text x="954" y="344" text-anchor="middle" font-size="9" fill="#5a647a" font-family="ui-monospace,monospace">rest served from device cache</text>
+
+    <!-- CCD → Quest arrows -->
+    <path d="M1096,130 H1128" stroke="#00c8ff" stroke-width="1.5" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="1098" y="122" font-size="9" fill="#00c8ff">catalog</text>
+    <path d="M1096,220 H1128" stroke="#00c8ff" stroke-width="1.5" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="1098" y="212" font-size="9" fill="#00c8ff">bundles</text>
+
+    <!-- Unity Authentication -->
+    <rect x="548" y="404" width="248" height="110" rx="6" fill="#100d1a" stroke="#ce6cf0" stroke-width="1.5"/>
+    <text x="672" y="426" text-anchor="middle" font-size="11" fill="#ce6cf0" font-weight="600">Unity Authentication</text>
+    <line x1="563" y1="434" x2="780" y2="434" stroke="#2a1a3e" stroke-width="1"/>
+    <text x="672" y="452" text-anchor="middle" font-size="10" fill="#cdd9e5">Signs player in anonymously</text>
+    <text x="672" y="468" text-anchor="middle" font-size="10" fill="#8b949e">Silent — no login screen shown</text>
+    <text x="672" y="484" text-anchor="middle" font-size="10" fill="#8b949e">Session token required for</text>
+    <text x="672" y="500" text-anchor="middle" font-size="10" fill="#8b949e">Cloud Code calls</text>
+
+    <!-- Unity Cloud Code -->
+    <rect x="820" y="404" width="276" height="110" rx="6" fill="#14120a" stroke="#f59f4c" stroke-width="1.5"/>
+    <text x="958" y="426" text-anchor="middle" font-size="11" fill="#f59f4c" font-weight="600">Unity Cloud Code</text>
+    <line x1="835" y1="434" x2="1080" y2="434" stroke="#2a200d" stroke-width="1"/>
+    <text x="958" y="452" text-anchor="middle" font-size="10" fill="#cdd9e5">CheckAccessCode function</text>
+    <text x="958" y="468" text-anchor="middle" font-size="10" fill="#8b949e">Player types code on in-VR keypad</text>
+    <text x="958" y="484" text-anchor="middle" font-size="10" fill="#8b949e">Code sent server-side → returns true/false</text>
+    <text x="958" y="500" text-anchor="middle" font-size="10" fill="#8b949e">Valid codes managed without an app update</text>
+
+    <!-- Auth/Cloud Code → Quest arrows -->
+    <path d="M1096,454 H1128" stroke="#ce6cf0" stroke-width="1.2" stroke-dasharray="4 3" fill="none" marker-end="url(#ca-pur)"/>
+    <path d="M1096,484 H1128" stroke="#f59f4c" stroke-width="1.2" stroke-dasharray="4 3" fill="none" marker-end="url(#ca-org)"/>
+
+    <!-- ══ RIGHT COLUMN — Quest Runtime ══ -->
+    <rect x="1128" y="34" width="482" height="50" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="54"  text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="600">Quest Headset — App Installed</text>
+    <text x="1369" y="72"  text-anchor="middle" font-size="10" fill="#8b949e">Local scenes (_VPT, 00_WaitingRoom) always present in APK</text>
+
+    <path d="M1369,84 V106" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="106" width="482" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="1369" y="128" text-anchor="middle" font-size="12" fill="#00c8ff"  font-weight="500">Fetch Remote Catalog from CCD</text>
+    <text x="1369" y="146" text-anchor="middle" font-size="10" fill="#8b949e">Retrieves catalog.json — manifest of all bundles + hashes</text>
+
+    <path d="M1369,158 V180" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="180" width="482" height="52" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="202" text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="500">Compare Content Hashes</text>
+    <text x="1369" y="220" text-anchor="middle" font-size="10" fill="#8b949e">New hash on a bundle = content changed → queue for download</text>
+
+    <path d="M1369,232 V254" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="254" width="482" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="1369" y="276" text-anchor="middle" font-size="12" fill="#00c8ff"  font-weight="500">Download Changed Bundles</text>
+    <text x="1369" y="294" text-anchor="middle" font-size="10" fill="#8b949e">Only re-downloads what changed · rest served from local cache</text>
+
+    <path d="M1369,306 V328" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="328" width="482" height="52" rx="6" fill="#142b1a" stroke="#56d364" stroke-width="1.5"/>
+    <text x="1369" y="350" text-anchor="middle" font-size="12" fill="#c8f0d2" font-weight="500">Local Cache (on device)</text>
+    <text x="1369" y="368" text-anchor="middle" font-size="10" fill="#8b949e">All Predownload bundles cached · no network needed during play</text>
+
+    <path d="M1369,380 V402" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="402" width="482" height="50" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="422" text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="500">SceneLoader.LoadSceneAsync(address)</text>
+    <text x="1369" y="440" text-anchor="middle" font-size="10" fill="#8b949e">Player walks through XR portal or uses Facility Map</text>
+
+    <path d="M1369,452 V466 M1240,466 H1498 M1240,466 V486 M1498,466 V486" stroke="#4a5168" stroke-width="1" fill="none"/>
+
+    <!-- Addressables path -->
+    <rect x="1128" y="486" width="228" height="66" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1.5"/>
+    <text x="1242" y="508" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Addressables API</text>
+    <text x="1242" y="524" text-anchor="middle" font-size="10" fill="#8b949e">Loads scene from local cache</text>
+    <text x="1242" y="540" text-anchor="middle" font-size="10" fill="#8b949e">All scenes except 01_StartingRoom</text>
+
+    <!-- Fallback path -->
+    <rect x="1382" y="486" width="228" height="66" rx="6" fill="#2a1212" stroke="#f85149" stroke-width="1.5"/>
+    <text x="1496" y="508" text-anchor="middle" font-size="11" fill="#ffd2cf" font-weight="500">SceneManager fallback</text>
+    <text x="1496" y="524" text-anchor="middle" font-size="10" fill="#ffd2cf">01_StartingRoom only</text>
+    <text x="1496" y="540" text-anchor="middle" font-size="10" fill="#8b949e">Loads from APK · dev TODO</text>
+
+    <!-- VPT gate section divider -->
+    <line x1="1128" y1="576" x2="1610" y2="576" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
+    <text x="1369" y="594" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1">VPT ENTRY GATE FLOW</text>
+
+    <rect x="1128" y="604" width="482" height="52" rx="6" fill="#100d1a" stroke="#ce6cf0" stroke-width="1.2"/>
+    <text x="1369" y="625" text-anchor="middle" font-size="11" fill="#ce6cf0" font-weight="500">Auth: SignInAnonymouslyAsync()</text>
+    <text x="1369" y="643" text-anchor="middle" font-size="10" fill="#8b949e">Runs on WaitingRoom load · silent session token obtained</text>
+
+    <path d="M1369,656 V676" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="676" width="482" height="66" rx="6" fill="#14120a" stroke="#f59f4c" stroke-width="1.2"/>
+    <text x="1369" y="698" text-anchor="middle" font-size="11" fill="#f59f4c" font-weight="500">Cloud Code: CheckAccessCode(typedCode)</text>
+    <text x="1369" y="715" text-anchor="middle" font-size="10" fill="#8b949e">Player types code on in-VR keypad · sent to server</text>
+    <text x="1369" y="731" text-anchor="middle" font-size="10" fill="#8b949e">Server returns true → doors open · false → access denied</text>
+
+    <path d="M1369,742 V762" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="762" width="482" height="42" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="779" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Tour begins → 01_TourEntrance loads from CCD cache</text>
+    <text x="1369" y="795" text-anchor="middle" font-size="10" fill="#8b949e">Continuing through factory rooms via XR portals</text>
+  </svg>
+
+  <!-- ── CCD explainer ── -->
+  <div style="margin-top:28px; max-width:900px;">
+
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#8b949e;
+                font-weight:600;border-bottom:1px solid #2a3142;padding-bottom:5px;margin-bottom:18px;">
+      How Unity CCD works in this project
+    </div>
+
+    <div style="font-size:13px;line-height:1.7;color:#cdd9e5;">
+
+      <p style="margin:0 0 16px;">
+        The basic idea is that instead of bundling everything into the Quest APK — which has size limits
+        and requires a full store submission to update — content is split into two buckets: stuff that
+        must be there on launch, and stuff that can be downloaded later. CCD is the CDN that hosts the
+        downloadable bucket.
+      </p>
+
+      <ul style="margin:0 0 16px;padding-left:22px;display:flex;flex-direction:column;gap:12px;">
+        <li>
+          <strong style="color:#e6edf3;">At build time</strong> — Unity's Addressables system packages the VPT factory tour scenes
+          into compressed asset bundles. The
+          <code style="background:#1c2230;padding:1px 5px;border-radius:3px;font-size:11px;color:#cbe0ff;">CloudBuildConfigurator</code>
+          script points those bundles at CCD's build path so they get uploaded to Unity's servers as
+          part of the CI pipeline. A remote catalog file is also published alongside them — acting
+          as a manifest telling the app what's available and where.
+        </li>
+        <li>
+          <strong style="color:#e6edf3;">On the headset</strong> — when the app first runs in VPT mode it fetches the remote catalog
+          to find out what bundles exist and their download URLs. The <em>Predownload</em> label on the
+          group means it's configured to pull those bundles down proactively before the player
+          actually tries to walk into a room, so there's no loading stall mid-experience. Once
+          downloaded they're cached locally on the Quest.
+        </li>
+        <li>
+          <strong style="color:#e6edf3;">When a player walks through a portal</strong> —
+          <code style="background:#1c2230;padding:1px 5px;border-radius:3px;font-size:11px;color:#cbe0ff;">SceneLoader.cs</code>
+          calls the Addressables API with the scene's address string. Addressables checks the local
+          cache, finds the bundle already there, and loads the scene from it. From the player's
+          perspective it just feels like moving between rooms.
+        </li>
+        <li>
+          <strong style="color:#e6edf3;">The update story</strong> — if Knauf wants to change something in the Furnace room — swap
+          a 3D model, update a texture, rework narration — the dev team uploads new bundles to CCD
+          and publishes a new catalog. The next time a headset opens the app, it fetches the updated
+          catalog, sees the Furnace bundle hash has changed, re-downloads just that bundle, and the
+          update is live. No App Lab submission, no store review, no touching the APK.
+        </li>
+        <li>
+          <strong style="color:#f85149;">The
+          <code style="background:#1c2230;padding:1px 5px;border-radius:3px;font-size:11px;color:#ffd2cf;">01_StartingRoom</code>
+          problem</strong> — because that scene was never added to the Addressable group, it never
+          gets bundled and uploaded to CCD. The fallback reaches into the APK itself via
+          <code style="background:#1c2230;padding:1px 5px;border-radius:3px;font-size:11px;color:#ffd2cf;">SceneManager.LoadSceneAsync</code>,
+          which works but means that scene cannot be updated remotely. That's why it's flagged as a TODO.
+        </li>
+      </ul>
+
+      <p style="margin:0;font-size:12px;color:#5a647a;border-top:1px solid #1c2230;padding-top:12px;">
+        Addressables can be built and uploaded to CCD independently of the APK — content
+        changes don't require a full scene build or store submission. The APK only needs to be
+        rebuilt when core scripts, non-Addressable scenes, the XR rig, or the Unity version itself changes.
+      </p>
+
+    </div>
+  </div>
+
+  </div><!-- /tab-ccd -->
+
+  <div id="tab-questions" class="tab-panel">
+  <div style="max-width:860px; margin-top:4px;">
+
+    <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
+      The items below are open questions surfaced from a technical review of the Unity project.
+      Each one represents either a known gap, an assumption baked into the codebase that needs
+      client confirmation, or a decision that will affect future maintenance and updates.
+    </p>
+
+    <!-- ── CRITICAL ── -->
+    <div class="q-section">
+      <div class="q-section-title">Critical — needs resolution before launch</div>
+
+      <div class="q-card flag-red">
+        <span class="q-tag red">⚠ ORPHAN SCENE</span>
+        <p class="q-q">01_StartingRoom is not in the Addressable/CCD system. Was this intentional, or should it be migrated?</p>
+        <p class="q-context">
+          Every other VPT room (02–09) is hosted on Unity CCD and can be updated without an App Lab submission.
+          <code class="warn">01_StartingRoom</code> is missing from the Addressable group entirely — the code falls back to
+          <code class="warn">SceneManager.LoadSceneAsync</code>, loading it directly from the APK. This means any change
+          to that scene requires a full binary rebuild and store review. The script
+          <code class="warn">StartingRoomAditivePortal.cs</code> is explicitly marked <code>TODO / temp</code> in the codebase.
+          If this is a permanent scene, it should be added to the Addressable group so it can be updated remotely like its siblings.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── CONTENT & ACCESS ── -->
+    <div class="q-section">
+      <div class="q-section-title">Content &amp; access management</div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">ACCESS CODES</span>
+        <p class="q-q">What is the intended lifecycle of VPT access codes — single-use, time-limited, or permanent?</p>
+        <p class="q-context">
+          The Cloud Code module <code>CheckAccessCode</code> validates a typed code server-side and returns true/false.
+          No expiry or usage-count logic is visible in the project bindings. If codes are meant to be
+          single-use (e.g. issued per training session) or time-limited (e.g. valid for 30 days), that logic
+          needs to be built into the Cloud Code module. Who currently manages issuing and revoking codes,
+          and through what interface?
+        </p>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">KTA ACCESS</span>
+        <p class="q-q">Is the KTA showroom intentionally open to anyone with the app installed, or should it also have an access gate?</p>
+        <p class="q-context">
+          The access code gate only exists in the VPT flow (<code>00_WaitingRoom</code>). The KTA showroom
+          (Lobby → Commercial / Residential) has no equivalent authentication step — any headset with
+          the app can explore it freely. If the KTA content is meant to be demo-only or partner-facing,
+          a similar gate should be added. If it's intentionally open, no action is needed.
+        </p>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">CCD DEPLOYMENT</span>
+        <p class="q-q">Is there a staging vs. production CCD environment, and who approves content pushes to production?</p>
+        <p class="q-context">
+          The <code>CloudBuildConfigurator.cs</code> script reads a <code>CLOUD_PROFILE_NAME</code> environment variable
+          set in Unity Build Automation to determine which CCD bucket to target. It's not clear from the
+          project whether a staging bucket exists for testing content updates before they go live.
+          A bad push to the production bucket would affect every headset on next launch.
+          Who owns the CCD project credentials and what is the release approval process?
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── ANALYTICS & REPORTING ── -->
+    <div class="q-section">
+      <div class="q-section-title">Analytics &amp; reporting</div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">ANALYTICS SCOPE</span>
+        <p class="q-q">Are the current Mixpanel events sufficient, or are there additional training KPIs the client needs?</p>
+        <p class="q-context">
+          Currently tracked: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
+          <code>Level_Started</code>, <code>Level_Completed</code>, <code>Level_Exited</code>,
+          <code>Module_Entered</code>, <code>Module_Exited</code>, plus timed events.
+          Common training KPIs that are <em>not</em> currently tracked include: access code failure
+          rate, time spent per factory room, completion rates by headset model or firmware version,
+          and whether players are using the Facility Map shortcut vs. walking linearly through portals.
+          Should any of these be added?
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">ANONYMOUS AUTH</span>
+        <p class="q-q">Is anonymous sign-in the intended long-term authentication model, or will users eventually have named accounts?</p>
+        <p class="q-context">
+          Unity Authentication is currently used in anonymous mode — a silent session token is created
+          on each launch, purely to authorise Cloud Code calls. There is no persistent player identity
+          across sessions or headsets. If the client later wants per-user training records, completion
+          certificates, or leaderboards, the auth model would need to be upgraded to named accounts.
+          Is anonymous auth the intended long-term approach?
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── FUTURE CONTENT ── -->
+    <div class="q-section">
+      <div class="q-section-title">Future content scalability</div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">APK SIZE</span>
+        <p class="q-q">As the KTA showroom content grows, will the scenes that are currently APK-only need to move to CCD?</p>
+        <p class="q-context">
+          All KTA scenes (Lobby, Commercial, Residential) and the two VPT hub scenes (<code>_VPT</code>,
+          <code>00_WaitingRoom</code>) are bundled inside the APK. Meta Quest App Lab has a practical APK
+          size ceiling. If the KTA showroom content is expected to expand significantly — more product
+          rooms, higher-fidelity assets, additional languages — this budget should be reviewed before
+          it becomes a forcing function for a larger architecture change.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  </div><!-- /tab-questions -->
+
+</div>
+
+<!-- ══════════════════ INSPECTOR PANEL (fixed overlay) ══════════════════ -->
+<div id="panel">
+    <div id="ph">
+      <h2 id="ph-title">Inspector</h2>
+      <div class="ph-sub" id="ph-sub">Select a scene</div>
+      <button id="ph-close">✕</button>
+    </div>
+    <div id="pb">
+      <p class="placeholder">Click any coloured scene box to see what it is, what it does, and how it connects to other scenes.</p>
+    </div>
+</div>
+
+<script>
+// ── Scene data ────────────────────────────────────────────────────────────────
+var D = {
+  "Initialization": {
+    group:"boot", groupLabel:"Boot",
+    build:0, addr:null,
+    plain:"The very first thing that runs when the headset launches the app. It checks a single on/off switch (VPTSettings) to decide which experience to load — the product showroom (KTA) or the factory tour (VPT). The VR camera rig also lives here and stays loaded throughout the entire session.",
+    tech:"Initializer.cs reads VPTSettings.IsEnabled and calls the matching Addressable LoadSceneAsync. XR rig persists additively across all subsequent scene loads.",
+    scripts:[
+      {name:"Initializer.cs", path:"Assets/_Project/Scripts/SceneManagement/Initializer.cs", what:"Reads VPTSettings, loads _Main or _VPT via Addressable AssetReference"},
+      {name:"VPTSettings.cs", path:"Assets/_Project/Scripts/Utilities/VPTSettings.cs", what:"ScriptableObject holding _isEnabled (currently 0 = OFF)"}
+    ],
+    out:[
+      {to:"_Main", kind:"boot", label:"VPTSettings.IsEnabled = false (current)", via:"Initializer.cs → _mainSceneReference.LoadSceneAsync()"},
+      {to:"_VPT",  kind:"boot", label:"VPTSettings.IsEnabled = true",            via:"Initializer.cs → _vptSceneReference.LoadSceneAsync()"}
+    ], in:[]
+  },
+
+  "_Main": {
+    group:"hub", groupLabel:"KTA Master Hub",
+    build:1, addr:null,
+    plain:"The master scene for the KTA product showroom. It acts as a traffic controller — it doesn't contain visible 3D content itself, but it holds the state machine that decides which showroom area (Lobby, Commercial, Residential) to load next.",
+    tech:"Contains _MainManagers > _MainStateManager. Holds ScenePortalData refs for Lobby, Commercial, Residential, and the optional VPT cross-over. Loaded additively on top of Initialization.",
+    scripts:[
+      {name:"_MainStateManager (prefab)", path:"Assets/_Project/Prefabs/State Machines/_Main/_MainStateManager.prefab", what:"Holds portal refs for all KTA destinations + VPT"},
+      {name:"ScenePortalDictionary.cs",   path:"Assets/_Project/Scripts/State Machines/_Main/ScenePortalDictionary.cs", what:"Dictionary mapping portal types to ScenePortalData assets"}
+    ],
+    in:[
+      {from:"Initialization", kind:"boot", label:"VPTSettings.IsEnabled = false", via:"Initializer.cs → _mainSceneReference.LoadSceneAsync()"}
+    ],
+    out:[
+      {to:"Lobby",       kind:"state", label:"_MainStateManager",          via:"_MainStateManager.prefab holds Lobby ScenePortalData ref"},
+      {to:"Commercial",  kind:"state", label:"_MainStateManager",          via:"_MainStateManager.prefab holds Commercial ScenePortalData ref"},
+      {to:"Residential", kind:"state", label:"_MainStateManager",          via:"_MainStateManager.prefab holds Residential ScenePortalData ref"},
+      {to:"_VPT",        kind:"state", label:"_MainStateManager (VPT entry)", via:"_MainStateManager.prefab holds VPT ScenePortalData ref"}
+    ]
+  },
+
+  "_VPT": {
+    group:"hub", groupLabel:"VPT Master Hub",
+    build:null, addr:"VPT Local Scenes",
+    plain:"The master scene for the Virtual Plant Tour. Like _Main, it's a traffic controller — it runs the central VPT state machine that knows about all 10 factory rooms and routes the player between them. You can also reach it directly from the Lobby's 'Enter VPT' button.",
+    tech:"Contains _VPTManagers > _VPTRoomManager — central VPT state machine. References all 10 room ScenePortalData assets. Reachable from Initialization (VPT mode), _Main (state), or Lobby (UI button).",
+    scripts:[
+      {name:"_VPTRoomManager (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Common/_VPTRoomManager.prefab", what:"Central VPT state machine — holds refs to all room ScenePortalData assets"},
+      {name:"VPTStateMachine.cs",       path:"Assets/_Project/Scripts/State Machines/VPT/VPTStateMachine.cs", what:"Top-level VPT state machine logic"}
+    ],
+    in:[
+      {from:"Initialization", kind:"boot",  label:"VPTSettings.IsEnabled = true",  via:"Initializer.cs → _vptSceneReference.LoadSceneAsync()"},
+      {from:"_Main",          kind:"state", label:"_MainStateManager (VPT entry)", via:"_MainStateManager.prefab holds VPT ScenePortalData ref"},
+      {from:"Lobby",          kind:"ui",    label:"Lobby Main Menu — Enter VPT",   via:"Main Menu - Lobby Variant.prefab → VPT ScenePortalData"}
+    ],
+    out:[
+      {to:"00_WaitingRoom", kind:"state", label:"WaitingRoomLoadingPhase", via:"_VPTRoomManager.prefab + WaitingRoomLoadingPhase.cs OnEnter"},
+      {to:"01_StartingRoom", kind:"ui", label:"Facility Map menu", via:"Map Toggle - Starting Room Variant.prefab"},
+      {to:"02_BinderRoom",   kind:"ui", label:"Facility Map menu", via:"Map Toggle - Binder Room Variant.prefab"},
+      {to:"03_BatchHouse",   kind:"ui", label:"Facility Map menu", via:"Map Toggle - Batch House Variant.prefab"},
+      {to:"04_Furnace",      kind:"ui", label:"Facility Map menu", via:"Map Toggle - Furnace Variant.prefab"},
+      {to:"05_Fiberizing",   kind:"ui", label:"Facility Map menu", via:"Map Toggle - Fiberizing Variant.prefab"},
+      {to:"06_CuringAndCooling", kind:"ui", label:"Facility Map menu", via:"Map Toggle - Curing and Cooling Variant.prefab"},
+      {to:"07_Cutting",      kind:"ui", label:"Facility Map menu", via:"Map Toggle - Cutting Variant.prefab"},
+      {to:"08_Packaging",    kind:"ui", label:"Facility Map menu", via:"Map Toggle - Packaging Variant.prefab"},
+      {to:"09_WarehouseAndDistribution", kind:"ui", label:"Facility Map menu", via:"Map Toggle - Warehouse Variant.prefab"}
+    ]
+  },
+
+  "Lobby": {
+    group:"kta", groupLabel:"KTA",
+    build:4, addr:null,
+    plain:"The entrance hall of the KTA product showroom. The player lands here after the app boots into KTA mode. From the Lobby they can walk into the Commercial or Residential showroom wings, or choose to enter the factory tour (if VPT is enabled in the build).",
+    tech:"Contains LobbyStateManager (LobbyExploringPhase). Lobby Main Menu Variant holds the Enter VPT button, which VPTPortalButton.cs hides in KTA-only builds.",
+    scripts:[
+      {name:"LobbyExploringPhase (prefab)", path:"Assets/_Project/Prefabs/State Machines/Lobby/Phases/LobbyExploringPhase.prefab", what:"References Commercial and Residential portals"},
+      {name:"Main Menu - Lobby Variant (prefab)", path:"Assets/_Project/Prefabs/UI/Main Menu/Main Menu - Lobby Variant.prefab", what:"UI menu — includes Enter VPT button"},
+      {name:"VPTPortalButton.cs", path:"Assets/_Project/Scripts/Portal/VPTPortalButton.cs", what:"Hides the VPT entry button when VPTSettings.IsEnabled = false"}
+    ],
+    in:[
+      {from:"_Main",       kind:"state", label:"_MainStateManager",          via:"_MainStateManager.prefab holds Lobby ScenePortalData ref"},
+      {from:"Commercial",  kind:"state", label:"CommercialExploringModule (return)", via:"CommercialExploringModule.prefab + physical portal + Exit menu"},
+      {from:"Residential", kind:"ui",    label:"Exit menu (return)",          via:"Menu - Exit Screen.prefab / Menu - Exit Panel.prefab"}
+    ],
+    out:[
+      {to:"Commercial",  kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"},
+      {to:"Residential", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"},
+      {to:"_VPT",        kind:"ui",    label:"Lobby Main Menu — Enter VPT",          via:"Main Menu - Lobby Variant.prefab → VPT ScenePortalData"}
+    ]
+  },
+
+  "Commercial": {
+    group:"kta", groupLabel:"KTA",
+    build:2, addr:null,
+    plain:"The commercial products wing of the showroom. Here players can explore Knauf insulation products used in commercial buildings — things like ceiling tiles, wall insulation, and acoustic panels. They can return to the Lobby by walking through a physical portal or using the exit menu.",
+    tech:"Contains CommercialExploringModule state machine. Return to Lobby via CommercialExploringModule.prefab, EnvironmentPortal_Narrow physical XR portal, LobbyPortal Variant, or Exit menu.",
+    scripts:[
+      {name:"CommercialExploringModule (prefab)", path:"Assets/_Project/Prefabs/State Machines/Commercial/Exploring Module/CommercialExploringModule.prefab", what:"References Lobby portal for return nav"},
+      {name:"EnvironmentPortal_Narrow (prefab)",  path:"Assets/_Project/Prefabs/Portals/EnvironmentPortal_Narrow.prefab", what:"Physical walk-through XR portal back to Lobby"},
+      {name:"Menu - Exit Screen (prefab)",         path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Screen.prefab", what:"Exit menu return to Lobby"}
+    ],
+    in:[{from:"Lobby", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"}],
+    out:[{to:"Lobby", kind:"state", label:"CommercialExploringModule (return)", via:"CommercialExploringModule.prefab + portal + Exit menu"}]
+  },
+
+  "Residential": {
+    group:"kta", groupLabel:"KTA",
+    build:3, addr:null,
+    plain:"The residential products wing of the showroom. Players explore Knauf insulation products used in homes — loft insulation, wall cavity products, acoustic solutions for houses and flats. Return to Lobby via the exit menu.",
+    tech:"Returns to Lobby via the shared Menu - Exit Screen / Menu - Exit Panel prefabs.",
+    scripts:[
+      {name:"Menu - Exit Screen (prefab)", path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Screen.prefab", what:"Exit menu — shared across KTA scenes"},
+      {name:"Menu - Exit Panel (prefab)",  path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Panel.prefab", what:"Exit panel"}
+    ],
+    in:[{from:"Lobby", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"}],
+    out:[{to:"Lobby", kind:"ui", label:"Exit menu (return)", via:"Menu - Exit Screen.prefab / Menu - Exit Panel.prefab"}]
+  },
+
+  "00_WaitingRoom": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Local Scenes",
+    plain:"The starting point of the factory tour. The player arrives in a waiting area and must enter an access code on a wall panel to be granted entry into the plant. This acts as a security/authorisation gate before the tour begins — once the code is accepted, the doors open and you move on.",
+    tech:"Hosts WaitingRoomStateMachine with WaitingRoomLoadingPhase, WaitingRoomAccessCodePhase, and WaitingRoomOpenDoorsPhase. OnAccessGranted → LoadSceneAsync(TourEntrance).",
+    scripts:[
+      {name:"WaitingRoomStateMachine.cs",    path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomStateMachine.cs", what:"Top-level waiting room state machine"},
+      {name:"WaitingRoomLoadingPhase.cs",    path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomLoadingPhase.cs", what:"OnEnter → SceneLoader.LoadSceneAsync(waitingRoomPortalData)"},
+      {name:"WaitingRoomAccessCodePhase.cs", path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomAccessCodePhase.cs", what:"OnAccessGranted → LoadSceneAsync → 01_TourEntrance"},
+      {name:"WaitingRoomOpenDoorsPhase.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomOpenDoorsPhase.cs", what:"Animates doors before entering"}
+    ],
+    in:[{from:"_VPT", kind:"state", label:"WaitingRoomLoadingPhase", via:"_VPTRoomManager.prefab + WaitingRoomLoadingPhase.cs OnEnter"}],
+    out:[{to:"01_TourEntrance", kind:"state", label:"Access code granted", via:"WaitingRoomAccessCodePhase.cs + AccessPanelPhase.prefab"}]
+  },
+
+  "01_TourEntrance": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The vestibule you pass through after the access code is accepted. It's a short transition space between the waiting room and the actual factory floor — think of it as the airlock or changing-room area before entering the plant. It then triggers the load of the main starting room.",
+    tech:"StartingRoomAditivePortal.cs listens to the authorization event and calls LoadSceneAsync(startingRoomPortalData). The physical portal is labelled StartingRoom but actually loads this → 01_StartingRoom chain.",
+    scripts:[
+      {name:"StartingRoomAditivePortal.cs",       path:"Assets/_Project/Scripts/Portal/StartingRoomAditivePortal.cs", what:"TODO/temp — listens to authorization event → LoadSceneAsync(startingRoomPortalData)"},
+      {name:"TourEntranceAditiveSetupPhase.cs",   path:"Assets/_Project/Scripts/State Machines/VPT/TourEntranceAditiveSetupPhase.cs", what:"Additive setup phase for tour entrance"},
+      {name:"TourEntranceStandardSetupPhase.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/TourEntranceStandardSetupPhase.cs", what:"Standard setup phase for tour entrance"}
+    ],
+    in:[{from:"00_WaitingRoom", kind:"state", label:"Access code granted", via:"WaitingRoomAccessCodePhase.cs + AccessPanelPhase.prefab + StartingRoomPortal Variant.prefab"}],
+    out:[{to:"01_StartingRoom", kind:"state", label:"StartingRoomAditivePortal (TODO/temp)", via:"StartingRoomAditivePortal.cs → LoadSceneAsync fallback (not Addressable)"}]
+  },
+
+  "01_StartingRoom": {
+    group:"vpt", groupLabel:"VPT ⚠",
+    build:null, addr:null, addrWarn:true,
+    plain:"The main starting point inside the factory itself. This is where the linear tour loop begins — from here you walk through physical portal doorways to move from room to room through the manufacturing process. You can also jump directly to any room using the Facility Map menu. ⚠ Note: this scene is missing from the Addressables system, so it loads via a slower fallback — flagged as a TODO by the dev team.",
+    tech:"NOT in any Addressable group. Loaded via SceneManager.LoadSceneAsync fallback in SceneLoader.cs. StartingRoomAditivePortal.cs is marked TODO/temporary. StartingRoomStateMachine.cs manages the room.",
+    scripts:[
+      {name:"StartingRoomStateMachine.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/StartingRoomStateMachine.cs", what:"Starting room state machine"},
+      {name:"StartingRoomAditivePortal.cs", path:"Assets/_Project/Scripts/Portal/StartingRoomAditivePortal.cs", what:"Loads this scene — marked TODO, should become Addressable"},
+      {name:"SceneLoader.cs",              path:"Assets/_Project/Scripts/SceneManagement/SceneLoader.cs", what:"Falls back to SceneManager.LoadSceneAsync when no Addressable address found"},
+      {name:"BinderRoomPortal Variant",     path:"Assets/_Project/Prefabs/Portals/VPT/BinderRoomPortal Variant.prefab", what:"Physical XR portal → 02_BinderRoom"}
+    ],
+    in:[
+      {from:"01_TourEntrance", kind:"state", label:"StartingRoomAditivePortal (fallback)", via:"StartingRoomAditivePortal.cs → SceneManager.LoadSceneAsync"},
+      {from:"_VPT",           kind:"ui",    label:"Facility Map menu",                    via:"Map Toggle - Starting Room Variant.prefab"}
+    ],
+    out:[{to:"02_BinderRoom", kind:"portal", label:"BinderRoomPortal Variant", via:"_VPTRoomManager.prefab + BinderRoomPortal Variant.prefab (physical XR portal)"}]
+  },
+
+  "02_BinderRoom": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The binder room. In real insulation manufacturing, 'binder' is a liquid glue-like substance that gets sprayed onto the glass fibres to hold them together and give the insulation its shape and stiffness. This room shows and explains that process. You can walk forward to the Batch House or step back to the Starting Room.",
+    tech:"BinderRoomExplore phase references BatchHouse (forward) and StartingRoom (back) portals. Shared RoomExplorePhase.cs base class.",
+    scripts:[
+      {name:"BinderRoomExplore (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/BinderRoom/BinderRoomExplore.prefab", what:"References BatchHouse (forward) + StartingRoom (back) portals"},
+      {name:"BatchHousePortal Variant",   path:"Assets/_Project/Prefabs/Portals/VPT/BatchHousePortal Variant.prefab", what:"Physical XR portal → 03_BatchHouse"},
+      {name:"RoomExplorePhase.cs",        path:"Assets/_Project/Scripts/State Machines/VPT/RoomExplorePhase.cs", what:"Shared explore phase base class used by all VPT rooms"}
+    ],
+    in:[
+      {from:"01_StartingRoom", kind:"portal", label:"BinderRoomPortal Variant",    via:"_VPTRoomManager.prefab + BinderRoomPortal Variant.prefab"},
+      {from:"03_BatchHouse",   kind:"portal", label:"BinderRoomExplore (back nav)", via:"BinderRoomExplore.prefab references StartingRoom portal"},
+      {from:"_VPT",           kind:"ui",     label:"Facility Map menu",             via:"Map Toggle - Binder Room Variant.prefab"}
+    ],
+    out:[
+      {to:"03_BatchHouse",   kind:"portal", label:"BinderRoomExplore (forward)", via:"BinderRoomExplore.prefab + BatchHousePortal Variant.prefab"},
+      {to:"01_StartingRoom", kind:"portal", label:"BinderRoomExplore (back)",    via:"BinderRoomExplore.prefab references StartingRoom portal"}
+    ]
+  },
+
+  "03_BatchHouse": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The batch house. This is where the raw materials — mainly sand, limestone, soda ash, and recycled glass — are precisely weighed and mixed together (the 'batch') before being fed into the furnace for melting. Think of it as the kitchen before the cooking starts.",
+    tech:"Bidirectional nav: forward to Furnace via FurnacePortal Variant, back to BinderRoom. Also directly accessible via Facility Map menu (Menu - Facility Map Screen.prefab).",
+    scripts:[
+      {name:"FurnacePortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/FurnacePortal Variant.prefab", what:"Physical XR portal → 04_Furnace"},
+      {name:"RoomExplorePhase.cs",   path:"Assets/_Project/Scripts/State Machines/VPT/RoomExplorePhase.cs", what:"Shared explore phase base class"}
+    ],
+    in:[
+      {from:"02_BinderRoom", kind:"portal", label:"BinderRoomExplore (forward)", via:"BinderRoomExplore.prefab + BatchHousePortal Variant.prefab"},
+      {from:"04_Furnace",    kind:"portal", label:"FurnaceRoomExplore (back nav)", via:"FurnaceRoomExplore.prefab references BatchHouse portal"},
+      {from:"_VPT",         kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Batch House Variant.prefab + Menu - Facility Map Screen.prefab"}
+    ],
+    out:[
+      {to:"04_Furnace",   kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnacePortal Variant.prefab"},
+      {to:"02_BinderRoom",kind:"portal", label:"back nav", via:"State machine back portal ref"}
+    ]
+  },
+
+  "04_Furnace": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The furnace room. The mixed raw materials are fed into a giant furnace and melted at around 1,400°C — hot enough to turn sand and glass into a liquid. This is the heart of the manufacturing process and one of the most dramatic parts of the tour to see in VR. From here the molten glass moves on to be spun into fibres.",
+    tech:"FurnaceRoomExplore phase references BatchHouse (back) and Fiberization (forward) portals. FiberizingRoomPortal Variant → 05_Fiberizing.",
+    scripts:[
+      {name:"FurnaceRoomExplore (prefab)",           path:"Assets/_Project/Prefabs/State Machines/VPT/Furnace/FurnaceRoomExplore.prefab", what:"References BatchHouse (back) + Fiberization (forward) portals"},
+      {name:"FiberizingRoomPortal Variant",          path:"Assets/_Project/Prefabs/Portals/VPT/FiberizingRoomPortal Variant.prefab", what:"Physical XR portal → 05_Fiberizing"}
+    ],
+    in:[
+      {from:"03_BatchHouse",  kind:"portal", label:"forward from BatchHouse", via:"FurnacePortal Variant.prefab"},
+      {from:"05_Fiberizing",  kind:"portal", label:"Fiberization_RoomExplore (back nav)", via:"Fiberization_RoomExplore Variant.prefab references Furnace portal"},
+      {from:"_VPT",          kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Furnace Variant.prefab"}
+    ],
+    out:[
+      {to:"05_Fiberizing", kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnaceRoomExplore.prefab + FiberizingRoomPortal Variant.prefab"},
+      {to:"03_BatchHouse", kind:"portal", label:"FurnaceRoomExplore (back)",    via:"FurnaceRoomExplore.prefab references BatchHouse portal"}
+    ]
+  },
+
+  "05_Fiberizing": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The fiberizing room (also called fiberisation). Here the molten glass from the furnace is spun at high speed — like candy floss — to form incredibly thin glass fibres. These fibres are the core material of Knauf's glass wool insulation products. The binder from the Binder Room is sprayed on at this stage to stick the fibres together.",
+    tech:"Fiberization_RoomExplore Variant references CuringAndCooling (forward) and Furnace (back) portals. CuringAndCoolingPortal Variant → 06_CuringAndCooling.",
+    scripts:[
+      {name:"Fiberization_RoomExplore Variant (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Fiberzing/Fiberization_RoomExplore Variant.prefab", what:"References CuringAndCooling (forward) + Furnace (back) portals"},
+      {name:"CuringAndCoolingPortal Variant",            path:"Assets/_Project/Prefabs/Portals/VPT/CuringAndCoolingPortal Variant.prefab", what:"Physical XR portal → 06_CuringAndCooling"}
+    ],
+    in:[
+      {from:"04_Furnace",          kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnaceRoomExplore.prefab + FiberizingRoomPortal Variant.prefab"},
+      {from:"06_CuringAndCooling", kind:"portal", label:"CuringAndCoolingStateMachine (back nav)", via:"CuringAndCoolingStateMachine.prefab references Fiberization portal"},
+      {from:"_VPT",               kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Fiberizing Variant.prefab"}
+    ],
+    out:[
+      {to:"06_CuringAndCooling", kind:"portal", label:"Fiberization_RoomExplore (forward)", via:"Fiberization_RoomExplore Variant.prefab + CuringAndCoolingPortal Variant.prefab"},
+      {to:"04_Furnace",          kind:"portal", label:"Fiberization_RoomExplore (back)",    via:"Fiberization_RoomExplore Variant.prefab references Furnace portal"}
+    ]
+  },
+
+  "06_CuringAndCooling": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The curing and cooling room. After the glass fibres are formed, the binder that holds them together needs to be 'cured' — baked in a long oven so it sets hard and gives the insulation its permanent shape. Once baked, the product passes through a cooling section before it can be handled and cut. This is where raw fibres become recognisable insulation slabs.",
+    tech:"CuringAndCoolingStateMachine references Cutting (forward) and Fiberization (back) portals. CuttingRoomPortal Variant → 07_Cutting.",
+    scripts:[
+      {name:"CuringAndCoolingStateMachine (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/CuringAndCooling/CuringAndCoolingStateMachine.prefab", what:"References Cutting (forward) + Fiberization (back) portals"},
+      {name:"CuttingRoomPortal Variant",             path:"Assets/_Project/Prefabs/Portals/VPT/CuttingRoomPortal Variant.prefab", what:"Physical XR portal → 07_Cutting"}
+    ],
+    in:[
+      {from:"05_Fiberizing", kind:"portal", label:"Fiberization_RoomExplore (forward)", via:"Fiberization_RoomExplore Variant.prefab + CuringAndCoolingPortal Variant.prefab"},
+      {from:"07_Cutting",    kind:"portal", label:"CuttingStateMachine (back nav)", via:"CuttingStateMachine.prefab references CuringAndCooling portal"},
+      {from:"_VPT",         kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Curing and Cooling Variant.prefab"}
+    ],
+    out:[
+      {to:"07_Cutting",    kind:"portal", label:"CuringAndCoolingStateMachine (forward)", via:"CuringAndCoolingStateMachine.prefab + CuttingRoomPortal Variant.prefab"},
+      {to:"05_Fiberizing", kind:"portal", label:"CuringAndCoolingStateMachine (back)",    via:"CuringAndCoolingStateMachine.prefab references Fiberization portal"}
+    ]
+  },
+
+  "07_Cutting": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The cutting room. The large continuous 'blanket' of cured insulation coming out of the oven is cut to the standard product sizes here — widths, lengths, and thicknesses that match common building dimensions. Saws and slitters trim the product into the rolls and slabs you'd find at a builders' merchant.",
+    tech:"Both CuttingStateMachine and CuttingExploringPhase reference Packaging (forward) and CuringAndCooling (back) portals. PackagingRoomPortal Variant → 08_Packaging.",
+    scripts:[
+      {name:"CuttingStateMachine (prefab)",   path:"Assets/_Project/Prefabs/State Machines/VPT/Cutting/CuttingStateMachine.prefab", what:"References Packaging (forward) + CuringAndCooling (back) portals"},
+      {name:"CuttingExploringPhase (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Cutting/CuttingExploringPhase.prefab", what:"Phase also references Packaging portal"},
+      {name:"PackagingRoomPortal Variant",    path:"Assets/_Project/Prefabs/Portals/VPT/PackagingRoomPortal Variant.prefab", what:"Physical XR portal → 08_Packaging"}
+    ],
+    in:[
+      {from:"06_CuringAndCooling", kind:"portal", label:"CuringAndCoolingStateMachine (forward)", via:"CuringAndCoolingStateMachine.prefab + CuttingRoomPortal Variant.prefab"},
+      {from:"08_Packaging",        kind:"portal", label:"PackagingExploringPhase (back nav)", via:"PackagingExploringPhase.prefab references Cutting portal"},
+      {from:"_VPT",               kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Cutting Variant.prefab"}
+    ],
+    out:[
+      {to:"08_Packaging",        kind:"portal", label:"CuttingStateMachine / CuttingExploringPhase (forward)", via:"CuttingStateMachine.prefab + CuttingExploringPhase.prefab + PackagingRoomPortal Variant.prefab"},
+      {to:"06_CuringAndCooling", kind:"portal", label:"CuttingStateMachine (back)", via:"CuttingStateMachine.prefab references CuringAndCooling portal"}
+    ]
+  },
+
+  "08_Packaging": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The packaging room. Cut insulation products are wrapped in plastic film, labelled, and stacked onto pallets ready for dispatch. You'll see the finished Knauf-branded products in their familiar packaging here — the last step before they leave the factory.",
+    tech:"PackagingExploringPhase references WarehouseAndDistribution (forward) and Cutting (back) portals. WarehouseDistributionPortal Variant → 09_WarehouseAndDistribution.",
+    scripts:[
+      {name:"PackagingExploringPhase (prefab)",        path:"Assets/_Project/Prefabs/State Machines/VPT/Packaging/PackagingExploringPhase.prefab", what:"References WarehouseAndDistribution (forward) + Cutting (back) portals"},
+      {name:"WarehouseDistributionPortal Variant",     path:"Assets/_Project/Prefabs/Portals/VPT/WarehouseDistributionPortal Variant.prefab", what:"Physical XR portal → 09_WarehouseAndDistribution"}
+    ],
+    in:[
+      {from:"07_Cutting", kind:"portal", label:"CuttingStateMachine / CuttingExploringPhase (forward)", via:"CuttingStateMachine.prefab + PackagingRoomPortal Variant.prefab"},
+      {from:"_VPT",      kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Packaging Variant.prefab"}
+    ],
+    out:[
+      {to:"09_WarehouseAndDistribution", kind:"portal", label:"PackagingExploringPhase (forward)", via:"PackagingExploringPhase.prefab + WarehouseDistributionPortal Variant.prefab"},
+      {to:"07_Cutting",                  kind:"portal", label:"PackagingExploringPhase (back)",    via:"PackagingExploringPhase.prefab references Cutting portal"}
+    ]
+  },
+
+  "09_WarehouseAndDistribution": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The warehouse and distribution centre — the final stop on the tour. Pallets of finished insulation products are stored here and loaded onto lorries for delivery to builders' merchants and construction sites across the country. This is the end of the manufacturing journey.",
+    tech:"Final room in the linear tour route. No forward portal — end of the chain. Still reachable directly from the Facility Map menu on _VPT.",
+    scripts:[
+      {name:"PackagingExploringPhase (prefab)",    path:"Assets/_Project/Prefabs/State Machines/VPT/Packaging/PackagingExploringPhase.prefab", what:"References this scene's portal as its forward destination"},
+      {name:"WarehouseDistributionPortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/WarehouseDistributionPortal Variant.prefab", what:"Physical XR portal arriving from 08_Packaging"}
+    ],
+    in:[
+      {from:"08_Packaging", kind:"portal", label:"PackagingExploringPhase (forward)", via:"PackagingExploringPhase.prefab + WarehouseDistributionPortal Variant.prefab"},
+      {from:"_VPT",        kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Warehouse Variant.prefab"}
+    ],
+    out:[]
+  }
+};
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+var KPILL = {boot:"warn", state:"ok", ui:"kta", portal:"vpt"};
+var KLABEL= {boot:"boot", state:"state machine", ui:"UI", portal:"XR portal"};
+
+var panel    = document.getElementById("panel");
+var phTitle  = document.getElementById("ph-title");
+var phSub    = document.getElementById("ph-sub");
+var pb       = document.getElementById("pb");
+var active   = null;
+
+function pill(cls,txt){ return '<span class="pill '+cls+'">'+esc(txt)+'</span>'; }
+
+function renderScene(id){
+  var s = D[id]; if(!s) return;
+  phTitle.textContent = id;
+  phSub.textContent   = s.groupLabel;
+
+  var status = '';
+  if(s.build !== null) status += pill('ok','Build index '+s.build)+' ';
+  else                 status += pill('','Not in build')+' ';
+  if(s.addr)           status += pill('vpt', s.addr)+' ';
+  else if(s.addrWarn)  status += pill('warn','⚠ Not Addressable')+' ';
+  status += pill(s.group, s.groupLabel);
+
+  var scripts = s.scripts.map(function(sc){
+    return '<div class="script-item">'
+      +'<div class="si-name">'+esc(sc.name)+'</div>'
+      +'<div class="si-what">'+esc(sc.what)+'</div>'
+      +'<div class="si-path">'+esc(sc.path)+'</div>'
+      +'</div>';
+  }).join('');
+
+  function transHtml(list, dir){
+    if(!list.length) return '<p style="color:#5a647a;font-size:12px;margin:4px 0">None</p>';
+    return list.map(function(t){
+      return '<div class="trans-item">'
+        +'<div class="ti-row">'+pill(KPILL[t.kind],KLABEL[t.kind])
+        +'<span class="ti-name">'+(dir==='in'?'← '+esc(t.from):'→ '+esc(t.to))+'</span></div>'
+        +'<div class="ti-label">'+esc(t.label)+'</div>'
+        +'<div class="ti-via">'+esc(t.via)+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  pb.innerHTML =
+    '<h3>Status</h3><div>'+status+'</div>'
+   +'<h3>What is this?</h3><p class="plain">'+esc(s.plain)+'</p>'
+   +'<h3>Technical notes</h3><p class="tech">'+esc(s.tech)+'</p>'
+   +'<h3>Scripts &amp; prefabs ('+s.scripts.length+')</h3>'+scripts
+   +'<h3>Transitions in ('+s.in.length+')</h3>'+transHtml(s.in,'in')
+   +'<h3>Transitions out ('+s.out.length+')</h3>'+transHtml(s.out,'out');
+}
+
+var page = document.getElementById('page');
+
+function openPanel(id, el){
+  if(active) active.classList.remove('active');
+  active = el; el.classList.add('active');
+  renderScene(id);
+  panel.classList.add('open');
+  page.classList.add('panel-open');
+}
+function closePanel(){
+  panel.classList.remove('open');
+  page.classList.remove('panel-open');
+  if(active){ active.classList.remove('active'); active=null; }
+  pb.innerHTML = '<p class="placeholder">Click any coloured scene box to see what it is, what it does, and how it connects to other scenes.</p>';
+  phTitle.textContent='Inspector'; phSub.textContent='Select a scene';
+}
+
+document.getElementById('ph-close').addEventListener('click', closePanel);
+
+document.querySelectorAll('.scene-node').forEach(function(el){
+  var id = el.getAttribute('data-scene');
+  if(!D[id]) return;
+  el.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(active===el && panel.classList.contains('open')){ closePanel(); }
+    else { openPanel(id, el); }
+  });
+});
+
+document.getElementById('page').addEventListener('click', function(e){
+  if(panel.classList.contains('open') && !e.target.closest('.scene-node')){
+    closePanel();
+  }
+});
+
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id !== 'scene'){ closePanel(); }
+}
+</script>
+</body>
+</html>
