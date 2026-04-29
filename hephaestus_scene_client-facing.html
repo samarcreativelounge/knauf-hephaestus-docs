@@ -79,15 +79,6 @@
     </a>
   </div>
 
-  <p class="intro">
-    This diagram maps the structure of the Knauf VR Training Academy app for Meta Quest. Each coloured
-    box is a space or environment within the experience, and the arrows show how players move between them.
-    The app runs in one of two modes — the <strong style="color:#cbe0ff;">KTA product showroom</strong> or
-    the <strong style="color:#ffe2c2;">VPT factory tour</strong> — determined by a configuration switch
-    set at build time. Both modes share the same startup sequence but branch into entirely separate
-    environments from there.
-  </p>
-
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showTab('scene',this)">Scene Flow</button>
     <button class="tab-btn" onclick="showTab('ccd',this)">Addressables &amp; CCD Pipeline</button>
@@ -297,104 +288,236 @@
     <path class="e-u" d="M1059,1050 V1040"/>
 
   </svg>
+
+  <!-- ══ Project overview below schematic ══ -->
+  <div class="notes">
+    <h2>Project overview</h2>
+    <p>
+      <strong>Knauf VR Training Academy</strong> is a Meta Quest VR application built on Unity 2022.3.
+      There is no web or desktop variant — it is Quest-only.
+      The app has two content modes: <strong>KTA</strong> (Knauf Training Academy — the product showroom)
+      and <strong>VPT</strong> (Virtual Plant Tour — a walkthrough of a real Knauf glass-wool factory).
+      Which mode loads is controlled by a build-time configuration switch. Both modes share the same
+      startup sequence but branch into entirely separate environments from there.
+    </p>
+    <p style="margin-top:10px;">
+      The VPT factory tour follows the real Knauf manufacturing process in order:
+      Waiting Room → Tour Entrance → Starting Room → Binder Room → Batch House →
+      Furnace → Fiberizing → Curing &amp; Cooling → Cutting → Packaging →
+      Warehouse &amp; Distribution. Players can also jump to any room directly
+      via the in-VR Facility Map menu. Each room supports forward and back portal navigation.
+    </p>
+  </div>
   </div><!-- /tab-scene -->
 
   <!-- ══ CONTENT DELIVERY TAB ══ -->
   <div id="tab-ccd" class="tab-panel">
   <div style="max-width:900px; margin-top:4px;">
 
-    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg"
-         font-family="-apple-system,Segoe UI,Roboto,sans-serif">
-      <defs>
-        <marker id="cd-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="#4a5168"/>
-        </marker>
-        <marker id="cd-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="#00c8ff"/>
-        </marker>
-        <marker id="cd-grn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="#56d364"/>
-        </marker>
-      </defs>
+  <svg viewBox="0 0 1640 820" xmlns="http://www.w3.org/2000/svg"
+       font-family="-apple-system,Segoe UI,Roboto,sans-serif"
+       style="background:radial-gradient(ellipse at 50% 0%,#131922 0%,#0a0d12 80%);border:1px solid #2a3142;border-radius:8px;">
+    <defs>
+      <marker id="ca-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4a5168"/></marker>
+      <marker id="ca-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00c8ff"/></marker>
+      <marker id="ca-grn"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#56d364"/></marker>
+      <marker id="ca-pur"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ce6cf0"/></marker>
+      <marker id="ca-org"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f59f4c"/></marker>
+    </defs>
 
-      <!-- Background -->
-      <rect width="900" height="420" fill="#0a0d12"/>
+    <!-- column dividers -->
+    <line x1="530"  y1="28" x2="530"  y2="800" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
+    <line x1="1110" y1="28" x2="1110" y2="800" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
 
-      <!-- ── LEFT: Dev Team ── -->
-      <rect x="30" y="30" width="220" height="340" rx="8" fill="#161b22" stroke="#2a3142" stroke-width="1.5"/>
-      <text x="140" y="56" text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="600">Development Team</text>
-      <line x1="45" y1="65" x2="235" y2="65" stroke="#2a3142" stroke-width="1"/>
+    <!-- column headers -->
+    <text x="265"  y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">BUILD PIPELINE</text>
+    <text x="820"  y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">CLOUD SERVICES</text>
+    <text x="1375" y="22" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1.5">QUEST HEADSET · RUNTIME</text>
 
-      <rect x="55" y="82" width="170" height="52" rx="6" fill="#0d1d3a" stroke="#4c8bf5" stroke-width="1.5"/>
-      <text x="140" y="103" text-anchor="middle" font-size="11" fill="#cbe0ff">Update room content</text>
-      <text x="140" y="120" text-anchor="middle" font-size="10" fill="#8b949e">models, textures, narration</text>
+    <!-- ══ BUILD COLUMN ══ -->
+    <rect x="40" y="34" width="460" height="76" rx="8" fill="#1a1f2e" stroke="#4a5168" stroke-width="1.5"/>
+    <text x="270" y="58"  text-anchor="middle" font-size="13" fill="#cdd9e5" font-weight="600">Development Team</text>
+    <text x="270" y="78"  text-anchor="middle" font-size="11" fill="#8b949e">Updates room content in Unity</text>
+    <text x="270" y="95"  text-anchor="middle" font-size="11" fill="#8b949e">Packages scenes for delivery</text>
 
-      <path d="M140,134 V158" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#cd-arr)"/>
+    <path d="M270,110 V136" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+    <path d="M140,140 H400 M140,140 V160 M400,140 V160" stroke="#4a5168" stroke-width="1" fill="none"/>
 
-      <rect x="55" y="158" width="170" height="52" rx="6" fill="#0d1d3a" stroke="#4c8bf5" stroke-width="1.5"/>
-      <text x="140" y="179" text-anchor="middle" font-size="11" fill="#cbe0ff">Build &amp; publish</text>
-      <text x="140" y="196" text-anchor="middle" font-size="10" fill="#8b949e">automated pipeline</text>
+    <!-- Built-in scenes box -->
+    <rect x="40" y="160" width="195" height="152" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1.8"/>
+    <text x="137" y="182" text-anchor="middle" font-size="11" fill="#56d364"  font-weight="600">Built-in Scenes</text>
+    <text x="137" y="198" text-anchor="middle" font-size="10" fill="#8b949e">Bundled inside the app</text>
+    <line x1="55"  y1="206" x2="220" y2="206" stroke="#1f4a26" stroke-width="1"/>
+    <text x="137" y="222" text-anchor="middle" font-size="10.5" fill="#c8f0d2">Tour Hub</text>
+    <text x="137" y="238" text-anchor="middle" font-size="10.5" fill="#c8f0d2">Waiting Room</text>
+    <line x1="55"  y1="250" x2="220" y2="250" stroke="#1f4a26" stroke-width="1"/>
+    <text x="137" y="270" text-anchor="middle" font-size="10" fill="#5a647a">Always present after install</text>
+    <text x="137" y="286" text-anchor="middle" font-size="10" fill="#5a647a">No download required</text>
 
-      <path d="M140,210 V234" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#cd-arr)"/>
+    <path d="M137,312 V350" stroke="#56d364" stroke-width="1.5" fill="none" marker-end="url(#ca-grn)"/>
+    <rect x="40" y="350" width="195" height="42" rx="5" fill="#142b1a" stroke="#56d364" stroke-width="1"/>
+    <text x="137" y="366" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Bundled in App</text>
+    <text x="137" y="382" text-anchor="middle" font-size="10" fill="#8b949e">always on device after install</text>
 
-      <rect x="55" y="234" width="170" height="52" rx="6" fill="#0d1d3a" stroke="#4c8bf5" stroke-width="1.5"/>
-      <text x="140" y="255" text-anchor="middle" font-size="11" fill="#cbe0ff">Uploaded to cloud</text>
-      <text x="140" y="272" text-anchor="middle" font-size="10" fill="#8b949e">no app store involved</text>
+    <!-- Downloadable rooms box -->
+    <rect x="260" y="160" width="230" height="152" rx="6" fill="#061218" stroke="#00c8ff" stroke-width="1.8"/>
+    <text x="375" y="182" text-anchor="middle" font-size="11" fill="#00c8ff" font-weight="600">Factory Tour Rooms</text>
+    <text x="375" y="198" text-anchor="middle" font-size="10" fill="#8b949e">Uploaded to cloud servers</text>
+    <line x1="275" y1="206" x2="475" y2="206" stroke="#0d2030" stroke-width="1"/>
+    <text x="375" y="222" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Tour Entrance</text>
+    <text x="375" y="238" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Binder Room · Batch House</text>
+    <text x="375" y="254" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Furnace · Fiberizing</text>
+    <text x="375" y="270" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Curing &amp; Cooling · Cutting</text>
+    <text x="375" y="286" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Packaging · Warehouse</text>
 
-      <!-- ── CENTRE: Cloud ── -->
-      <rect x="330" y="30" width="240" height="340" rx="8" fill="#050e14" stroke="#00c8ff" stroke-width="1.5"/>
-      <text x="450" y="56" text-anchor="middle" font-size="12" fill="#00c8ff" font-weight="600">Knauf Cloud Servers</text>
-      <line x1="345" y1="65" x2="555" y2="65" stroke="#003040" stroke-width="1"/>
+    <path d="M490,236 H546" stroke="#00c8ff" stroke-width="1.8" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="492" y="226" font-size="9" fill="#00c8ff">upload rooms</text>
+    <text x="492" y="238" font-size="9" fill="#00c8ff">+ content index</text>
 
-      <rect x="355" y="82" width="190" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1"/>
-      <text x="450" y="103" text-anchor="middle" font-size="11" fill="#cdd9e5">Room content stored</text>
-      <text x="450" y="120" text-anchor="middle" font-size="10" fill="#8b949e">all 9 factory tour rooms</text>
+    <!-- Build pipeline note -->
+    <rect x="40" y="420" width="460" height="60" rx="6" fill="#12161f" stroke="#2a3142" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="270" y="442" text-anchor="middle" font-size="10.5" fill="#8b949e" font-weight="500">Automated build &amp; upload pipeline</text>
+    <text x="270" y="458" text-anchor="middle" font-size="10"   fill="#5a647a">When a build is triggered, room bundles are automatically</text>
+    <text x="270" y="472" text-anchor="middle" font-size="10"   fill="#5a647a">packaged and uploaded to cloud servers</text>
 
-      <rect x="355" y="162" width="190" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1"/>
-      <text x="450" y="183" text-anchor="middle" font-size="11" fill="#cdd9e5">Version tracking</text>
-      <text x="450" y="200" text-anchor="middle" font-size="10" fill="#8b949e">detects what has changed</text>
+    <!-- Content update callout -->
+    <rect x="40" y="506" width="460" height="112" rx="8" fill="#061218" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="270" y="528" text-anchor="middle" font-size="12" fill="#00c8ff" font-weight="600">Updating content — no app store needed</text>
+    <line x1="55" y1="536" x2="485" y2="536" stroke="#0d2030" stroke-width="1"/>
+    <text x="270" y="554" text-anchor="middle" font-size="10.5" fill="#cdd9e5">1. Developer updates room content in Unity</text>
+    <text x="270" y="570" text-anchor="middle" font-size="10.5" fill="#cdd9e5">2. New version packaged and uploaded to cloud</text>
+    <text x="270" y="586" text-anchor="middle" font-size="10.5" fill="#cdd9e5">3. Cloud index updated automatically</text>
+    <text x="270" y="602" text-anchor="middle" font-size="10.5" fill="#cdd9e5">4. Headsets receive update on next app launch</text>
 
-      <rect x="355" y="242" width="190" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1"/>
-      <text x="450" y="263" text-anchor="middle" font-size="11" fill="#cdd9e5">Serves updates</text>
-      <text x="450" y="280" text-anchor="middle" font-size="10" fill="#8b949e">only changed rooms re-sent</text>
+    <!-- ══ CENTER COLUMN — Cloud Servers ══ -->
+    <rect x="548" y="34" width="548" height="348" rx="8" fill="#050e14" stroke="#00c8ff" stroke-width="2"/>
+    <text x="822" y="58"  text-anchor="middle" font-size="13" fill="#00c8ff"  font-weight="600">Knauf Cloud Servers</text>
+    <text x="822" y="74"  text-anchor="middle" font-size="10" fill="#5a647a">Content delivery network</text>
+    <line x1="563" y1="82" x2="1080" y2="82" stroke="#0d2030" stroke-width="1"/>
 
-      <!-- Dev → Cloud arrow -->
-      <path d="M250,260 H328" stroke="#00c8ff" stroke-width="1.5" fill="none" marker-end="url(#cd-blue)"/>
-      <text x="289" y="252" text-anchor="middle" font-size="9" fill="#00c8ff">upload</text>
+    <!-- Content index -->
+    <rect x="563" y="92" width="248" height="68" rx="5" fill="#0d1d26" stroke="#00c8ff" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="687" y="114" text-anchor="middle" font-size="11" fill="#cdd9e5" font-weight="500">Content Index</text>
+    <text x="687" y="130" text-anchor="middle" font-size="10" fill="#8b949e">list of all rooms + version fingerprints</text>
+    <text x="687" y="146" text-anchor="middle" font-size="9"  fill="#5a647a">updated every time a room changes</text>
 
-      <!-- ── RIGHT: Headset ── -->
-      <rect x="650" y="30" width="220" height="340" rx="8" fill="#161b22" stroke="#56d364" stroke-width="1.5"/>
-      <text x="760" y="56" text-anchor="middle" font-size="12" fill="#c8f0d2" font-weight="600">Player's Headset</text>
-      <line x1="665" y1="65" x2="855" y2="65" stroke="#1a3520" stroke-width="1"/>
+    <!-- Hosted rooms list -->
+    <rect x="828" y="92" width="253" height="274" rx="5" fill="#0d1d26" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="113" text-anchor="middle" font-size="11" fill="#cdd9e5" font-weight="500">Hosted Room Bundles</text>
+    <line x1="843" y1="121" x2="1066" y2="121" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="139" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Tour Entrance</text>
+    <text x="954" y="157" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Binder Room</text>
+    <text x="954" y="175" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Batch House</text>
+    <text x="954" y="193" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Furnace</text>
+    <text x="954" y="211" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Fiberizing</text>
+    <text x="954" y="229" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Curing &amp; Cooling</text>
+    <text x="954" y="247" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Cutting</text>
+    <text x="954" y="265" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Packaging</text>
+    <text x="954" y="283" text-anchor="middle" font-size="10.5" fill="#ffe2c2">Warehouse &amp; Distribution</text>
+    <line x1="843" y1="294" x2="1066" y2="294" stroke="#1d3a5e" stroke-width="1"/>
+    <text x="954" y="312" text-anchor="middle" font-size="9" fill="#5a647a">each room tracked by version fingerprint</text>
+    <text x="954" y="328" text-anchor="middle" font-size="9" fill="#5a647a">only changed rooms re-downloaded on update</text>
+    <text x="954" y="344" text-anchor="middle" font-size="9" fill="#5a647a">rest loaded from device cache</text>
 
-      <rect x="675" y="82" width="170" height="52" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1"/>
-      <text x="760" y="103" text-anchor="middle" font-size="11" fill="#c8f0d2">App opens</text>
-      <text x="760" y="120" text-anchor="middle" font-size="10" fill="#8b949e">checks for new content</text>
+    <!-- Cloud → Quest arrows -->
+    <path d="M1096,130 H1128" stroke="#00c8ff" stroke-width="1.5" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="1098" y="122" font-size="9" fill="#00c8ff">index</text>
+    <path d="M1096,220 H1128" stroke="#00c8ff" stroke-width="1.5" fill="none" marker-end="url(#ca-cyan)"/>
+    <text x="1098" y="212" font-size="9" fill="#00c8ff">rooms</text>
 
-      <path d="M760,134 V158" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#cd-arr)"/>
+    <!-- Player sign-in -->
+    <rect x="548" y="404" width="248" height="110" rx="6" fill="#100d1a" stroke="#ce6cf0" stroke-width="1.5"/>
+    <text x="672" y="426" text-anchor="middle" font-size="11" fill="#ce6cf0" font-weight="600">Player Sign-in</text>
+    <line x1="563" y1="434" x2="780" y2="434" stroke="#2a1a3e" stroke-width="1"/>
+    <text x="672" y="452" text-anchor="middle" font-size="10" fill="#cdd9e5">Happens silently on app launch</text>
+    <text x="672" y="468" text-anchor="middle" font-size="10" fill="#8b949e">No login screen shown to player</text>
+    <text x="672" y="484" text-anchor="middle" font-size="10" fill="#8b949e">Session token required to</text>
+    <text x="672" y="500" text-anchor="middle" font-size="10" fill="#8b949e">verify access codes</text>
 
-      <rect x="675" y="158" width="170" height="52" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1"/>
-      <text x="760" y="179" text-anchor="middle" font-size="11" fill="#c8f0d2">Downloads updates</text>
-      <text x="760" y="196" text-anchor="middle" font-size="10" fill="#8b949e">only what changed</text>
+    <!-- Access code verification -->
+    <rect x="820" y="404" width="276" height="110" rx="6" fill="#14120a" stroke="#f59f4c" stroke-width="1.5"/>
+    <text x="958" y="426" text-anchor="middle" font-size="11" fill="#f59f4c" font-weight="600">Access Code Verification</text>
+    <line x1="835" y1="434" x2="1080" y2="434" stroke="#2a200d" stroke-width="1"/>
+    <text x="958" y="452" text-anchor="middle" font-size="10" fill="#cdd9e5">Player types code on in-VR keypad</text>
+    <text x="958" y="468" text-anchor="middle" font-size="10" fill="#8b949e">Code checked server-side</text>
+    <text x="958" y="484" text-anchor="middle" font-size="10" fill="#8b949e">Returns: access granted / denied</text>
+    <text x="958" y="500" text-anchor="middle" font-size="10" fill="#8b949e">Codes managed without an app update</text>
 
-      <path d="M760,210 V234" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#cd-arr)"/>
+    <!-- Auth/Access → Quest arrows -->
+    <path d="M1096,454 H1128" stroke="#ce6cf0" stroke-width="1.2" stroke-dasharray="4 3" fill="none" marker-end="url(#ca-pur)"/>
+    <path d="M1096,484 H1128" stroke="#f59f4c" stroke-width="1.2" stroke-dasharray="4 3" fill="none" marker-end="url(#ca-org)"/>
 
-      <rect x="675" y="234" width="170" height="52" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1"/>
-      <text x="760" y="255" text-anchor="middle" font-size="11" fill="#c8f0d2">Plays updated content</text>
-      <text x="760" y="272" text-anchor="middle" font-size="10" fill="#8b949e">no restart needed</text>
+    <!-- ══ RIGHT COLUMN — Quest Runtime ══ -->
+    <rect x="1128" y="34" width="482" height="50" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="54"  text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="600">Quest Headset — App Installed</text>
+    <text x="1369" y="72"  text-anchor="middle" font-size="10" fill="#8b949e">Built-in scenes (Tour Hub, Waiting Room) always present</text>
 
-      <!-- Cloud → Headset arrow -->
-      <path d="M572,200 H648" stroke="#56d364" stroke-width="1.5" fill="none" marker-end="url(#cd-grn)"/>
-      <text x="610" y="192" text-anchor="middle" font-size="9" fill="#56d364">sync</text>
+    <path d="M1369,84 V106" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
 
-      <!-- Bottom callout -->
-      <rect x="30" y="390" width="840" height="20" rx="4" fill="none"/>
-      <text x="450" y="405" text-anchor="middle" font-size="11" fill="#5a647a">
-        Content updates reach every headset automatically — no app store submission, no player action required
-      </text>
+    <rect x="1128" y="106" width="482" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="1369" y="128" text-anchor="middle" font-size="12" fill="#00c8ff"  font-weight="500">Fetch Content Index from Cloud</text>
+    <text x="1369" y="146" text-anchor="middle" font-size="10" fill="#8b949e">Downloads room list — checks what has changed</text>
 
-    </svg>
-  </div>
+    <path d="M1369,158 V180" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="180" width="482" height="52" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="202" text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="500">Compare Version Fingerprints</text>
+    <text x="1369" y="220" text-anchor="middle" font-size="10" fill="#8b949e">Identifies which rooms have new content available</text>
+
+    <path d="M1369,232 V254" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="254" width="482" height="52" rx="6" fill="#050e14" stroke="#00c8ff" stroke-width="1.5"/>
+    <text x="1369" y="276" text-anchor="middle" font-size="12" fill="#00c8ff"  font-weight="500">Download Updated Rooms</text>
+    <text x="1369" y="294" text-anchor="middle" font-size="10" fill="#8b949e">Only re-downloads what changed · rest from device cache</text>
+
+    <path d="M1369,306 V328" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="328" width="482" height="52" rx="6" fill="#142b1a" stroke="#56d364" stroke-width="1.5"/>
+    <text x="1369" y="350" text-anchor="middle" font-size="12" fill="#c8f0d2" font-weight="500">Stored on Device</text>
+    <text x="1369" y="368" text-anchor="middle" font-size="10" fill="#8b949e">All rooms cached — no internet needed during play</text>
+
+    <path d="M1369,380 V402" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="402" width="482" height="50" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="422" text-anchor="middle" font-size="12" fill="#cdd9e5" font-weight="500">Player Enters Room</text>
+    <text x="1369" y="440" text-anchor="middle" font-size="10" fill="#8b949e">Walk through XR portal or use Facility Map</text>
+
+    <path d="M1369,452 V466 M1240,466 H1498 M1240,466 V486 M1498,466 V486" stroke="#4a5168" stroke-width="1" fill="none"/>
+
+    <!-- Loads from cache -->
+    <rect x="1128" y="486" width="228" height="66" rx="6" fill="#0d2614" stroke="#56d364" stroke-width="1.5"/>
+    <text x="1242" y="508" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Loads from Cache</text>
+    <text x="1242" y="524" text-anchor="middle" font-size="10" fill="#8b949e">All rooms except Starting Room</text>
+    <text x="1242" y="540" text-anchor="middle" font-size="10" fill="#8b949e">Instant — no network needed</text>
+
+    <!-- Fallback -->
+    <rect x="1382" y="486" width="228" height="66" rx="6" fill="#2a1212" stroke="#f85149" stroke-width="1.5"/>
+    <text x="1496" y="508" text-anchor="middle" font-size="11" fill="#ffd2cf" font-weight="500">⚠ Loads from App</text>
+    <text x="1496" y="524" text-anchor="middle" font-size="10" fill="#ffd2cf">Starting Room only</text>
+    <text x="1496" y="540" text-anchor="middle" font-size="10" fill="#8b949e">Cannot be updated remotely</text>
+
+    <!-- VPT gate section -->
+    <line x1="1128" y1="576" x2="1610" y2="576" stroke="#2a3142" stroke-dasharray="4 4" stroke-width="1"/>
+    <text x="1369" y="594" text-anchor="middle" font-size="10" fill="#4a5168" font-weight="600" letter-spacing="1">FACTORY TOUR ENTRY GATE</text>
+
+    <rect x="1128" y="604" width="482" height="52" rx="6" fill="#100d1a" stroke="#ce6cf0" stroke-width="1.2"/>
+    <text x="1369" y="625" text-anchor="middle" font-size="11" fill="#ce6cf0" font-weight="500">Silent Sign-in</text>
+    <text x="1369" y="643" text-anchor="middle" font-size="10" fill="#8b949e">Runs automatically when Waiting Room loads</text>
+
+    <path d="M1369,656 V676" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="676" width="482" height="66" rx="6" fill="#14120a" stroke="#f59f4c" stroke-width="1.2"/>
+    <text x="1369" y="698" text-anchor="middle" font-size="11" fill="#f59f4c" font-weight="500">Access Code Check</text>
+    <text x="1369" y="715" text-anchor="middle" font-size="10" fill="#8b949e">Player types code on in-VR keypad</text>
+    <text x="1369" y="731" text-anchor="middle" font-size="10" fill="#8b949e">Verified server-side → granted or denied</text>
+
+    <path d="M1369,742 V762" stroke="#4a5168" stroke-width="1.5" fill="none" marker-end="url(#ca-grey)"/>
+
+    <rect x="1128" y="762" width="482" height="42" rx="6" fill="#1c2230" stroke="#2a3142" stroke-width="1.5"/>
+    <text x="1369" y="779" text-anchor="middle" font-size="11" fill="#c8f0d2" font-weight="500">Tour begins → Tour Entrance loads</text>
+    <text x="1369" y="795" text-anchor="middle" font-size="10" fill="#8b949e">Continuing through factory rooms via XR portals</text>
+
+  </svg>
   </div><!-- /tab-ccd -->
 
 <div id="tab-integrations" class="tab-panel">
@@ -610,4 +733,3 @@ function showTab(id, btn){
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                  
