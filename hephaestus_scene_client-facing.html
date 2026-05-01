@@ -516,6 +516,46 @@
     <text x="1369" y="795" text-anchor="middle" font-size="10" fill="#8b949e">Continuing through factory rooms via XR portals</text>
 
   </svg>
+
+  <!-- ── BUILD PROCESS — from Quest App Build Guide PDF ── -->
+  <div style="margin-top:28px; max-width:960px;">
+
+    <div class="pdf-section-title">
+      Build &amp; Deploy Process
+      <span class="pdf-badge">📄 Quest App Build Guide</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+
+      <div style="border:1px solid #1a3540;border-left:3px solid #26c6da;border-radius:8px;background:#0a1a1f;padding:14px 16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:#26c6da;font-weight:600;margin-bottom:10px;">KTA — Showroom Builds</div>
+        <div style="font-size:13px;color:#cdd9e5;line-height:1.9;">
+          <div>Internal testing build</div>
+          <div>Client preview (alpha / beta)</div>
+          <div>Wider stakeholder review</div>
+          <div>Live production — 130+ users</div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:#26c6da;">⏱ ~2 hours to build</div>
+      </div>
+
+      <div style="border:1px solid #1a3540;border-left:3px solid #26c6da;border-radius:8px;background:#0a1a1f;padding:14px 16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:#26c6da;font-weight:600;margin-bottom:10px;">VPT — Factory Tour Builds</div>
+        <div style="font-size:13px;color:#cdd9e5;line-height:1.9;">
+          <div>Internal testing build</div>
+          <div>Production — currently Mickey Chastain &amp; Scott Stillabower only</div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:#26c6da;">⏱ ~2.5 hours to build · tour content delivered separately via cloud</div>
+      </div>
+
+    </div>
+
+    <div style="border:1px solid #1a3540;border-left:3px solid #26c6da;border-radius:8px;background:#0a1a1f;padding:14px 16px;font-size:13px;color:#cdd9e5;line-height:1.7;">
+      <strong style="color:#26c6da;">Deploying to headsets:</strong> Once a build is ready, it is uploaded to Meta's business distribution platform.
+      It takes roughly 20 minutes to process before it automatically appears on all enrolled headsets — no action needed from users.
+    </div>
+
+  </div>
+
   </div><!-- /tab-ccd -->
 
 <div id="tab-integrations" class="tab-panel">
@@ -644,6 +684,37 @@
 
     </div>
 
+    <!-- ── FROM PDF DOCUMENTATION ── -->
+    <div class="q-section">
+      <div class="pdf-section-title">
+        From Documentation Review
+        <span class="pdf-badge">📄 Quest App Build Guide &amp; KT Email</span>
+      </div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">VPT AUDIENCE</span>
+        <p class="q-q">The Factory Tour is currently limited to two named reviewers — has this changed?</p>
+        <p class="q-context">
+          As of December 2025, the VPT production build was only going to Mickey Chastain and Scott Stillabower
+          for internal review — it had not yet been rolled out to a broader audience. Before wider distribution,
+          a technical change is recommended to ensure tour content stays in sync with the app version on each headset.
+          Has the audience expanded, and has this been addressed?
+        </p>
+      </div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">HANDOVER STATUS</span>
+        <p class="q-q">Has the full technical handover from Subvrsive been completed — build pipeline and all?</p>
+        <p class="q-context">
+          The codebase was transferred from Subvrsive to a new home during the December 2025 handover.
+          At the time, the cloud build system and headset distribution platform still needed to be
+          reconnected to the new codebase location. Has that been confirmed as complete, and is the
+          new team fully set up to build and deploy independently?
+        </p>
+      </div>
+
+    </div>
+
     <!-- ── CONTENT & ACCESS ── -->
     <div class="q-section">
       <div class="q-section-title">Content &amp; access management</div>
@@ -732,4 +803,3 @@ function showTab(id, btn){
 <div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#4a5168;letter-spacing:.4px;">by Samar Shool</div>
 </body>
 </html>
-                                                  
