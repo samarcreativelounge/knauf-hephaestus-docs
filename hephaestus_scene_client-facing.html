@@ -64,6 +64,16 @@
   .q-context { font-size:13px; color:#8b949e; margin:0; line-height:1.65; }
   .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:12px; color:#cbe0ff; }
   .q-context code.warn { color:#ffd2cf; }
+  .q-risk { margin-top:12px; padding-top:11px; border-top:1px solid rgba(255,255,255,.07); }
+  .q-risk-label { font-size:10px; text-transform:uppercase; letter-spacing:.6px; font-weight:600; color:#e05c5c; margin-bottom:6px; display:block; }
+  .q-risk p { font-size:12px; color:#cdd9e5; line-height:1.65; margin:4px 0 0; }
+  .q-risk p::before { content:"→ "; color:#8b949e; }
+  .q-cite { font-size:10px; color:#6e7681; font-style:italic; margin-top:10px; }
+  .pdf-sources-banner { background:rgba(38,198,218,.06); border:1px solid rgba(38,198,218,.18);
+    border-radius:7px; padding:11px 16px; margin-bottom:24px; font-size:11.5px; color:#8b949e; line-height:1.8; }
+  .pdf-sources-banner strong { color:#26c6da; margin-right:6px; }
+  .pdf-source-item { display:inline-block; background:rgba(38,198,218,.08); border:1px solid rgba(38,198,218,.2);
+    border-radius:4px; padding:1px 8px; margin:2px 4px 2px 0; color:#cdd9e5; font-size:11px; }
 </style>
 </head>
 <body>
@@ -71,7 +81,7 @@
 
   <div id="header-row">
     <div>
-      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: April 30, 2026 · 10:48 PM EST</span></h1>
+      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: May 04, 2026 · 11:10 AM EDT</span></h1>
       <div class="sub">Meta Quest VR · two content modes (KTA product showroom / VPT Virtual Plant Tour)</div>
     </div>
     <a id="download-btn" href="hephaestus_scene_client-facing.html" download="hephaestus_scene_client-facing.html">
@@ -657,10 +667,17 @@
   </div><!-- /tab-integrations -->
 
 <div id="tab-questions" class="tab-panel">
-  <div style="margin-top:4px;">
+  <div style="max-width:860px; margin-top:4px;">
+
+    <div class="pdf-sources-banner">
+      <strong>📄 Documentation reviewed:</strong>
+      <span class="pdf-source-item">Quest App Build Guide.pdf</span>
+      <span class="pdf-source-item">Makeway Mail - FW_ RP_Subversive KT.pdf</span>
+      <span class="pdf-source-item">Knauf Headset support 2025-1.pdf</span>
+    </div>
 
     <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
-      The items below are open questions surfaced from a technical review of the Unity project.
+      The items below are open questions surfaced from a technical review of the Unity project and all three supporting documents listed above.
       Each one represents either a known gap, an assumption baked into the codebase that needs
       client confirmation, or a decision that will affect future maintenance and updates.
     </p>
@@ -675,11 +692,15 @@
         <p class="q-context">
           Every other VPT room (02–09) is hosted on Unity CCD and can be updated without an App Lab submission.
           <code class="warn">01_StartingRoom</code> is missing from the Addressable group entirely — the code falls back to
-          <code class="warn">SceneManager.LoadSceneAsync</code>, loading it directly from the APK. This means any change
-          to that scene requires a full binary rebuild and store review. The script
+          <code class="warn">SceneManager.LoadSceneAsync</code>, loading it directly from the APK. The script
           <code class="warn">StartingRoomAditivePortal.cs</code> is explicitly marked <code>TODO / temp</code> in the codebase.
-          If this is a permanent scene, it should be added to the Addressable group so it can be updated remotely like its siblings.
         </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>Any bug fix or content tweak to StartingRoom requires a full APK rebuild and a new App Lab submission — a process that can take days and blocks all other updates.</p>
+          <p>As VPT grows, StartingRoom will increasingly fall out of sync with the remote update pipeline. If Knauf ever needs to push a fix to that scene independently, there is currently no path to do so without a code change.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — StartingRoomAditivePortal.cs, AddressableAssetGroup inspection</div>
       </div>
 
     </div>
@@ -688,29 +709,61 @@
     <div class="q-section">
       <div class="pdf-section-title">
         From Documentation Review
-        <span class="pdf-badge">📄 Quest App Build Guide &amp; KT Email</span>
+        <span class="pdf-badge">📄 Quest App Build Guide · KT Email · Headset Setup Guide</span>
+      </div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">DEVICE ACCESS</span>
+        <p class="q-q">Can Makeway enable Developer Mode on Knauf's managed Quest headsets to sideload and test APK builds directly?</p>
+        <p class="q-context">
+          The Knauf headset setup guide confirms all Meta Quest 3 devices are enrolled in Knauf's
+          <code>Quest for Business</code> organization. Managed devices typically have Developer Mode
+          locked by the org's MDM policy. Standard APK sideloading via ADB — the normal dev testing
+          workflow — requires Developer Mode to be enabled on the headset. Without it, test builds
+          cannot be loaded directly and must go through the full organizational distribution pipeline
+          via Meta Quest Developer Hub.
+        </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>Makeway cannot test APK builds on physical hardware without going through the full organizational distribution pipeline, adding significant turnaround time to each test cycle.</p>
+          <p>If Developer Mode is unavailable, an alternative testing process — such as a separate unlocked developer headset — needs to be established before active development begins, or build iteration will be severely slowed.</p>
+        </div>
+        <div class="q-cite">📄 Source: Knauf Headset support 2025-1.pdf — Quest for Business managed device enrollment, FAQ (cannot download other apps / multiple accounts)</div>
+      </div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">REPO HANDOVER</span>
+        <p class="q-q">Has Unity Cloud Build and Quest For Business been fully reconnected to the Azure DevOps repo?</p>
+        <p class="q-context">
+          The quest-app codebase was migrated from Subvrsive's GitHub to Azure DevOps at
+          <code>dev.azure.com/rightpoint/KNI - VR Training/_git/quest-app</code> as part of the Dec 2025
+          agency handover. At the time of the KT, the Unity Cloud Build pipeline and Quest For Business
+          distribution both still needed to be pointed at the new ADO repo — the team was waiting until
+          the then-current build shipped before making the switch.
+        </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>If Makeway is building from a diverged or forked repo, any code changes will not flow through the correct Unity Cloud Build pipeline — test builds cannot be properly distributed to headsets via the established process.</p>
+          <p>The longer the repos stay out of sync, the harder the reconciliation. Merge conflicts compound and there is increasing risk of shipping from an outdated codebase.</p>
+        </div>
+        <div class="q-cite">📄 Source: Makeway Mail - FW_ RP_Subversive KT.pdf — repo migration section</div>
       </div>
 
       <div class="q-card flag-teal">
         <span class="q-tag teal">VPT AUDIENCE</span>
-        <p class="q-q">The Factory Tour is currently limited to two named reviewers — has this changed?</p>
+        <p class="q-q">VPT Release Production is currently limited to two named reviewers — is this still the case?</p>
         <p class="q-context">
-          As of December 2025, the VPT production build was only going to Mickey Chastain and Scott Stillabower
-          for internal review — it had not yet been rolled out to a broader audience. Before wider distribution,
-          a technical change is recommended to ensure tour content stays in sync with the app version on each headset.
-          Has the audience expanded, and has this been addressed?
+          Per the Quest App Build Guide (Dec 2025), <code>VPT - Release Production</code> was being used
+          exclusively for internal client review by Mickey Chastain and Scott Stillabower — it had not yet
+          moved to a broad Knauf rollout. The guide recommends switching from "latest" CCD bundle to pinned
+          releases before any wider distribution, to prevent version mismatch between APK and DLC content.
         </p>
-      </div>
-
-      <div class="q-card flag-teal">
-        <span class="q-tag teal">HANDOVER STATUS</span>
-        <p class="q-q">Has the full technical handover from Subvrsive been completed — build pipeline and all?</p>
-        <p class="q-context">
-          The codebase was transferred from Subvrsive to a new home during the December 2025 handover.
-          At the time, the cloud build system and headset distribution platform still needed to be
-          reconnected to the new codebase location. Has that been confirmed as complete, and is the
-          new team fully set up to build and deploy independently?
-        </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>If the audience has expanded but the build config still points to the "latest" CCD bundle, any content push could break live reviewer sessions mid-experience with mismatched assets.</p>
+          <p>Without confirming the current access list, there is no baseline to validate against when new headsets are enrolled or old ones are removed from the org.</p>
+        </div>
+        <div class="q-cite">📄 Source: Quest App Build Guide.pdf — VPT Release Production section, Dec 2025</div>
       </div>
 
     </div>
@@ -725,10 +778,30 @@
         <p class="q-context">
           The Cloud Code module <code>CheckAccessCode</code> validates a typed code server-side and returns true/false.
           No expiry or usage-count logic is visible in the project bindings. If codes are meant to be
-          single-use (e.g. issued per training session) or time-limited (e.g. valid for 30 days), that logic
-          needs to be built into the Cloud Code module. Who currently manages issuing and revoking codes,
-          and through what interface?
+          single-use or time-limited, that logic needs to be built into the Cloud Code module.
         </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>Codes issued for a specific training session remain valid indefinitely — there is no mechanism to deactivate them once the session ends.</p>
+          <p>If a code leaks or is shared, Knauf has no server-side way to revoke access short of changing every code and redistributing to all legitimate users.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — VPTAccessService/CheckAccessCode Cloud Code module</div>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">CCD DEPLOYMENT</span>
+        <p class="q-q">Is there a staging vs. production CCD environment, and who approves content pushes to production?</p>
+        <p class="q-context">
+          The <code>CloudBuildConfigurator.cs</code> script reads a <code>CLOUD_PROFILE_NAME</code> environment variable
+          set in Unity Build Automation to determine which CCD bucket to target. It is not clear from the
+          project whether a staging bucket exists for testing content updates before they go live.
+        </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>A bad content push goes live to every active headset immediately on next launch — there is no way to roll back remotely, only push a corrected version and wait for headsets to pull it down on next launch.</p>
+          <p>Without a staging environment, the only way to safely test content updates is on a single isolated headset, which may not catch device-specific rendering issues before they reach the full fleet.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — CloudBuildConfigurator.cs, CLOUD_PROFILE_NAME env var</div>
       </div>
 
       <div class="q-card flag-amber">
@@ -738,20 +811,14 @@
           The access code gate only exists in the VPT flow (<code>00_WaitingRoom</code>). The KTA showroom
           (Lobby → Commercial / Residential) has no equivalent authentication step — any headset with
           the app can explore it freely. If the KTA content is meant to be demo-only or partner-facing,
-          a similar gate should be added. If it's intentionally open, no action is needed.
+          a similar gate should be added. If it is intentionally open, no action is needed.
         </p>
-      </div>
-
-      <div class="q-card flag-amber">
-        <span class="q-tag amber">CCD DEPLOYMENT</span>
-        <p class="q-q">Is there a staging vs. production CCD environment, and who approves content pushes to production?</p>
-        <p class="q-context">
-          The <code>CloudBuildConfigurator.cs</code> script reads a <code>CLOUD_PROFILE_NAME</code> environment variable
-          set in Unity Build Automation to determine which CCD bucket to target. It's not clear from the
-          project whether a staging bucket exists for testing content updates before they go live.
-          A bad push to the production bucket would affect every headset on next launch.
-          Who owns the CCD project credentials and what is the release approval process?
-        </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>If KTA contains unreleased or partner-only product information, any headset enrolled in Knauf's Quest for Business org can browse it without restriction.</p>
+          <p>Adding an access gate post-launch requires a code change and a full APK rebuild — it cannot be toggled remotely via CCD after the fact.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — 00_WaitingRoom scene, KTA Lobby scene (no equivalent gate)</div>
       </div>
 
     </div>
@@ -767,11 +834,14 @@
           Currently tracked: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
           <code>Level_Started</code>, <code>Level_Completed</code>, <code>Level_Exited</code>,
           <code>Module_Entered</code>, <code>Module_Exited</code>, plus timed events.
-          Common training KPIs that are <em>not</em> currently tracked include: access code failure
-          rate, time spent per factory room, completion rates by headset model or firmware version,
-          and whether players are using the Facility Map shortcut vs. walking linearly through portals.
-          Should any of these be added?
+          Potential additions: access code failure rate, time spent per factory room, Facility Map usage vs. linear walkthrough, and completion rates by headset firmware version.
         </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>If Knauf later requests room-level engagement data or training completion reports, adding tracking events requires a full APK rebuild — it cannot be added remotely via CCD.</p>
+          <p>Defining analytics scope while the codebase is actively being worked costs far less than retrofitting event tracking post-launch.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — AnalyticsManager.cs, Mixpanel event bindings</div>
       </div>
 
       <div class="q-card flag-grey">
@@ -779,16 +849,20 @@
         <p class="q-q">Is anonymous sign-in the intended long-term authentication model, or will users eventually have named accounts?</p>
         <p class="q-context">
           Unity Authentication is currently used in anonymous mode — a silent session token is created
-          on each launch, purely to authorise Cloud Code calls. There is no persistent player identity
+          on each launch purely to authorise Cloud Code calls. There is no persistent player identity
           across sessions or headsets. If the client later wants per-user training records, completion
           certificates, or leaderboards, the auth model would need to be upgraded to named accounts.
-          Is anonymous auth the intended long-term approach?
         </p>
+        <div class="q-risk">
+          <span class="q-risk-label">If not addressed</span>
+          <p>No short-term impact — anonymous auth works reliably for the current use case and adds no friction for users.</p>
+          <p>If Knauf later requires per-user training records or compliance reporting, migrating from anonymous to named accounts requires significant auth architecture changes. The earlier this is decided, the less refactoring is involved.</p>
+        </div>
+        <div class="q-cite">📄 Source: Unity codebase — Unity Authentication SDK initialisation, anonymous sign-in flow</div>
       </div>
 
     </div>
 
-  </div>
   </div><!-- /tab-questions -->
 
 </div>
