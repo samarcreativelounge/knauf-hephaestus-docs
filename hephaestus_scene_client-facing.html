@@ -47,23 +47,31 @@
   .tab-btn.questions.active { background:#3b0f0d; border-color:#f85149; color:#ffd2cf; }
   /* questions & integrations panel styles */
   .q-section { margin-bottom:32px; }
-  .q-section-title { font-size:12px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
-    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:6px; margin:0 0 18px; }
-  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22; padding:20px 24px; margin-bottom:16px; }
+  .q-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
+    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; margin:0 0 16px; }
+  .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22;
+    padding:16px 18px; margin-bottom:12px; }
   .q-card.flag-red   { border-left:3px solid #f85149; }
   .q-card.flag-amber { border-left:3px solid #f59f4c; }
   .q-card.flag-blue  { border-left:3px solid #4c8bf5; }
   .q-card.flag-grey  { border-left:3px solid #4a5168; }
-  .q-tag { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px;
+  .q-tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px;
     font-weight:600; letter-spacing:.4px; margin-bottom:8px; }
   .q-tag.red   { background:rgba(248,81,73,.12);  color:#f85149;  border:1px solid rgba(248,81,73,.3);  }
   .q-tag.amber { background:rgba(245,159,76,.1);  color:#f59f4c;  border:1px solid rgba(245,159,76,.25); }
   .q-tag.blue  { background:rgba(76,139,245,.1);  color:#4c8bf5;  border:1px solid rgba(76,139,245,.25); }
   .q-tag.grey  { background:rgba(74,81,104,.2);   color:#8b949e;  border:1px solid rgba(74,81,104,.4); }
-  .q-q { font-size:15px; font-weight:500; color:#e6edf3; margin:0 0 8px; line-height:1.45; }
-  .q-context { font-size:13px; color:#8b949e; margin:0; line-height:1.65; }
-  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:12px; color:#cbe0ff; }
+  .q-q { font-size:14px; font-weight:500; color:#e6edf3; margin:0 0 6px; line-height:1.45; }
+  .q-context { font-size:12px; color:#8b949e; margin:0; line-height:1.6; }
+  .q-context code { background:#1c2230; padding:1px 5px; border-radius:3px; font-size:11px; color:#cbe0ff; }
   .q-context code.warn { color:#ffd2cf; }
+  .q-card.flag-teal { border-left:3px solid #26c6da; }
+  .q-tag.teal { background:rgba(38,198,218,.1); color:#26c6da; border:1px solid rgba(38,198,218,.25); }
+  .pdf-badge { display:inline-block; font-size:10px; background:rgba(38,198,218,.08);
+    color:#26c6da; border:1px solid rgba(38,198,218,.2); border-radius:4px;
+    padding:1px 7px; letter-spacing:.2px; font-weight:500; margin-left:8px; vertical-align:middle; }
+  .pdf-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#26c6da;
+    font-weight:600; border-bottom:1px solid #1a3540; padding-bottom:5px; margin:0 0 16px; }
   .q-risk { margin-top:12px; padding-top:11px; border-top:1px solid rgba(255,255,255,.07); }
   .q-risk-label { font-size:10px; text-transform:uppercase; letter-spacing:.6px; font-weight:600; color:#e05c5c; margin-bottom:6px; display:block; }
   .q-risk p { font-size:12px; color:#cdd9e5; line-height:1.65; margin:4px 0 0; }
@@ -74,6 +82,33 @@
   .pdf-sources-banner strong { color:#26c6da; margin-right:6px; }
   .pdf-source-item { display:inline-block; background:rgba(38,198,218,.08); border:1px solid rgba(38,198,218,.2);
     border-radius:4px; padding:1px 8px; margin:2px 4px 2px 0; color:#cdd9e5; font-size:11px; }
+
+  /* ── Meeting answer panels ── */
+  .q-row { display:flex; gap:16px; margin-bottom:12px; align-items:flex-start; max-width:1100px; }
+  .q-row > .q-card { flex:0 0 57%; min-width:0; margin-bottom:0; }
+  .q-answer { flex:0 0 40%; min-width:0; background:rgba(35,134,54,.1); border:1px solid #2ea043;
+              border-left:3px solid #56d364; border-radius:8px; padding:14px 16px; }
+  .q-answer-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+                    color:#56d364; margin-bottom:6px; }
+  .q-answer-title { font-size:13px; font-weight:700; color:#3fb950; margin-bottom:4px; line-height:1.35; }
+  .q-answer-date  { font-size:10px; color:#57ab5a; margin-bottom:10px; font-style:italic; }
+  .q-answer-body  { font-size:12px; color:#8b949e; line-height:1.65; }
+  .q-answer-body strong { color:#c8f0d2; }
+
+  /* inline date in answer header */
+  .q-ans-date { font-size:9px; color:#57ab5a; font-style:italic; font-weight:400;
+                letter-spacing:0; text-transform:none; margin-left:4px; }
+
+  /* bold separator lines between consecutive question cards within a section */
+  .q-section > .q-row + .q-row,
+  .q-section > .q-row + .q-card,
+  .q-section > .q-card + .q-row,
+  .q-section > .q-card + .q-card {
+    border-top: 2px solid #3d444d;
+    padding-top: 22px;
+    margin-top: 10px;
+  }
+
 </style>
 </head>
 <body>
@@ -81,7 +116,7 @@
 
   <div id="header-row">
     <div>
-      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: May 04, 2026 · 11:10 AM EDT</span></h1>
+      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: April 30, 2026 · 10:48 PM EST</span></h1>
       <div class="sub">Meta Quest VR · two content modes (KTA product showroom / VPT Virtual Plant Tour)</div>
     </div>
     <a id="download-btn" href="hephaestus_scene_client-facing.html" download="hephaestus_scene_client-facing.html">
@@ -666,8 +701,8 @@
   </div>
   </div><!-- /tab-integrations -->
 
-<div id="tab-questions" class="tab-panel">
-  <div style="max-width:860px; margin-top:4px;">
+  <div id="tab-questions" class="tab-panel">
+  <div style="max-width:1100px; margin-top:4px;">
 
     <div class="pdf-sources-banner">
       <strong>📄 Documentation reviewed:</strong>
@@ -686,8 +721,9 @@
     <div class="q-section">
       <div class="q-section-title">Critical — needs resolution before launch</div>
 
+      <div class="q-row">
       <div class="q-card flag-red">
-        <span class="q-tag red">⚠ ORPHAN SCENE</span>
+        <span class="q-tag red">Q1 · ⚠ ORPHAN SCENE</span>
         <p class="q-q">01_StartingRoom is not in the Addressable/CCD system. Was this intentional, or should it be migrated?</p>
         <p class="q-context">
           Every other VPT room (02–09) is hosted on Unity CCD and can be updated without an App Lab submission.
@@ -702,6 +738,13 @@
         </div>
         <div class="q-cite">📄 Source: Unity codebase — StartingRoomAditivePortal.cs, AddressableAssetGroup inspection</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Not intentional — needs fixing</div>
+
+        <div class="q-answer-body">Knauf confirmed they were <strong>unaware</strong> of this issue — it was not a deliberate decision. 01_StartingRoom should be migrated into the Addressables/CCD system so it can be updated remotely like every other VPT room.</div>
+      </div>
+      </div>
 
     </div>
 
@@ -712,8 +755,9 @@
         <span class="pdf-badge">📄 Quest App Build Guide · KT Email · Headset Setup Guide</span>
       </div>
 
+      <div class="q-row">
       <div class="q-card flag-teal">
-        <span class="q-tag teal">DEVICE ACCESS</span>
+        <span class="q-tag teal">Q2 · DEVICE ACCESS</span>
         <p class="q-q">Can Makeway enable Developer Mode on Knauf's managed Quest headsets to sideload and test APK builds directly?</p>
         <p class="q-context">
           The Knauf headset setup guide confirms all Meta Quest 3 devices are enrolled in Knauf's
@@ -730,9 +774,16 @@
         </div>
         <div class="q-cite">📄 Source: Knauf Headset support 2025-1.pdf — Quest for Business managed device enrollment, FAQ (cannot download other apps / multiple accounts)</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Approved — sideloading is fine</div>
+
+        <div class="q-answer-body">Confirmed: sideloading is permitted. Knauf's team also wants to be able to access the <strong>test environment</strong> alongside Makeway during development.</div>
+      </div>
+      </div>
 
       <div class="q-card flag-teal">
-        <span class="q-tag teal">REPO HANDOVER</span>
+        <span class="q-tag teal">Q3 · REPO HANDOVER</span>
         <p class="q-q">Has Unity Cloud Build and Quest For Business been fully reconnected to the Azure DevOps repo?</p>
         <p class="q-context">
           The quest-app codebase was migrated from Subvrsive's GitHub to Azure DevOps at
@@ -749,8 +800,9 @@
         <div class="q-cite">📄 Source: Makeway Mail - FW_ RP_Subversive KT.pdf — repo migration section</div>
       </div>
 
+      <div class="q-row">
       <div class="q-card flag-teal">
-        <span class="q-tag teal">VPT AUDIENCE</span>
+        <span class="q-tag teal">Q4 · VPT AUDIENCE</span>
         <p class="q-q">VPT Release Production is currently limited to two named reviewers — is this still the case?</p>
         <p class="q-context">
           Per the Quest App Build Guide (Dec 2025), <code>VPT - Release Production</code> was being used
@@ -765,6 +817,13 @@
         </div>
         <div class="q-cite">📄 Source: Quest App Build Guide.pdf — VPT Release Production section, Dec 2025</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Expanding — Ryan Britt added</div>
+
+        <div class="q-answer-body">VPT Release Production access is being extended to <strong>Ryan Britt</strong>, joining Mickey Chastain and Scott Stillabower. No longer limited to two reviewers.</div>
+      </div>
+      </div>
 
     </div>
 
@@ -772,8 +831,9 @@
     <div class="q-section">
       <div class="q-section-title">Content &amp; access management</div>
 
+      <div class="q-row">
       <div class="q-card flag-amber">
-        <span class="q-tag amber">ACCESS CODES</span>
+        <span class="q-tag amber">Q5 · ACCESS CODES</span>
         <p class="q-q">What is the intended lifecycle of VPT access codes — single-use, time-limited, or permanent?</p>
         <p class="q-context">
           The Cloud Code module <code>CheckAccessCode</code> validates a typed code server-side and returns true/false.
@@ -787,9 +847,16 @@
         </div>
         <div class="q-cite">📄 Source: Unity codebase — VPTAccessService/CheckAccessCode Cloud Code module</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Permanent — no expiry needed</div>
+
+        <div class="q-answer-body">Confirmed: access codes for training are <strong>permanent / forever</strong>. No single-use or time-limited logic is required. The current Cloud Code module behaviour is correct as-is.</div>
+      </div>
+      </div>
 
       <div class="q-card flag-amber">
-        <span class="q-tag amber">CCD DEPLOYMENT</span>
+        <span class="q-tag amber">Q6 · CCD DEPLOYMENT</span>
         <p class="q-q">Is there a staging vs. production CCD environment, and who approves content pushes to production?</p>
         <p class="q-context">
           The <code>CloudBuildConfigurator.cs</code> script reads a <code>CLOUD_PROFILE_NAME</code> environment variable
@@ -804,8 +871,9 @@
         <div class="q-cite">📄 Source: Unity codebase — CloudBuildConfigurator.cs, CLOUD_PROFILE_NAME env var</div>
       </div>
 
+      <div class="q-row">
       <div class="q-card flag-amber">
-        <span class="q-tag amber">KTA ACCESS</span>
+        <span class="q-tag amber">Q7 · KTA ACCESS</span>
         <p class="q-q">Is the KTA showroom intentionally open to anyone with the app installed, or should it also have an access gate?</p>
         <p class="q-context">
           The access code gate only exists in the VPT flow (<code>00_WaitingRoom</code>). The KTA showroom
@@ -820,6 +888,13 @@
         </div>
         <div class="q-cite">📄 Source: Unity codebase — 00_WaitingRoom scene, KTA Lobby scene (no equivalent gate)</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Leave as is — intentionally open</div>
+
+        <div class="q-answer-body">Confirmed: the KTA showroom is <strong>intentionally open</strong> — no access gate needed. Any enrolled headset can explore it freely. No action required.</div>
+      </div>
+      </div>
 
     </div>
 
@@ -827,8 +902,9 @@
     <div class="q-section">
       <div class="q-section-title">Analytics &amp; reporting</div>
 
+      <div class="q-row">
       <div class="q-card flag-grey">
-        <span class="q-tag grey">ANALYTICS SCOPE</span>
+        <span class="q-tag grey">Q8 · ANALYTICS SCOPE</span>
         <p class="q-q">Are the current Mixpanel events sufficient, or are there additional training KPIs the client needs?</p>
         <p class="q-context">
           Currently tracked: <code>Environment_Entered</code>, <code>Environment_Exited</code>,
@@ -843,9 +919,17 @@
         </div>
         <div class="q-cite">📄 Source: Unity codebase — AnalyticsManager.cs, Mixpanel event bindings</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Add: most used training areas</div>
 
+        <div class="q-answer-body">Knauf wants <strong>'most used training areas'</strong> added as a tracked metric. Version tracking was raised but deprioritised — trade-show wifi constraints make it impractical. Keep wifi behaviour as-is. Anonymous aggregate data is sufficient.</div>
+      </div>
+      </div>
+
+      <div class="q-row">
       <div class="q-card flag-grey">
-        <span class="q-tag grey">ANONYMOUS AUTH</span>
+        <span class="q-tag grey">Q9 · ANONYMOUS AUTH</span>
         <p class="q-q">Is anonymous sign-in the intended long-term authentication model, or will users eventually have named accounts?</p>
         <p class="q-context">
           Unity Authentication is currently used in anonymous mode — a silent session token is created
@@ -860,9 +944,17 @@
         </div>
         <div class="q-cite">📄 Source: Unity codebase — Unity Authentication SDK initialisation, anonymous sign-in flow</div>
       </div>
+      <div class="q-answer">
+        <div class="q-answer-label">📋 Answered in meeting <span class="q-ans-date">· May 8, 2026</span></div>
+        <div class="q-answer-title">Confirmed long-term — anonymous is intentional</div>
+
+        <div class="q-answer-body">Knauf confirmed anonymous auth is the intended permanent model. They only need <strong>overall aggregate behaviour</strong>, not individual user tracking. Named accounts are not required.</div>
+      </div>
+      </div>
 
     </div>
 
+  </div><!-- /max-width -->
   </div><!-- /tab-questions -->
 
 </div>
