@@ -8,7 +8,8 @@
   html, body { margin:0; padding:0; background:#0e1116; color:#e6edf3;
     font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
 
-  #page { padding:24px; max-width:2200px; }
+  #page { padding:24px; max-width:2200px; transition:padding-right .22s ease; }
+  #page.panel-open { padding-right:384px; }
 
   /* header row */
   #header-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
@@ -47,8 +48,8 @@
   .tab-btn.questions.active { background:#3b0f0d; border-color:#f85149; color:#ffd2cf; }
   /* questions & integrations panel styles */
   .q-section { margin-bottom:32px; }
-  .q-section-title { font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:#8b949e;
-    font-weight:600; border-bottom:1px solid #2a3142; padding-bottom:5px; margin:0 0 16px; }
+  .q-section-title { font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:#cdd9e5;
+    font-weight:700; border-bottom:1px solid #2a3142; padding-bottom:8px; margin:0 0 16px; }
   .q-card { border:1px solid #2a3142; border-radius:8px; background:#161b22;
     padding:16px 18px; margin-bottom:12px; }
   .q-card.flag-red   { border-left:3px solid #f85149; }
@@ -67,6 +68,8 @@
   .q-context code.warn { color:#ffd2cf; }
   .q-card.flag-teal { border-left:3px solid #26c6da; }
   .q-tag.teal { background:rgba(38,198,218,.1); color:#26c6da; border:1px solid rgba(38,198,218,.25); }
+  .q-card.flag-green { border-left:3px solid #3fb950; background:#0d1f14; }
+  .q-tag.green { background:rgba(63,185,80,.12); color:#3fb950; border:1px solid rgba(63,185,80,.3); }
   .pdf-badge { display:inline-block; font-size:10px; background:rgba(38,198,218,.08);
     color:#26c6da; border:1px solid rgba(38,198,218,.2); border-radius:4px;
     padding:1px 7px; letter-spacing:.2px; font-weight:500; margin-left:8px; vertical-align:middle; }
@@ -109,6 +112,59 @@
     margin-top: 10px;
   }
 
+
+  /* clickable nodes */
+  .scene-node { cursor:pointer; }
+  .scene-node .hit { fill:transparent; }
+  .scene-node:hover rect, .scene-node:hover polygon { filter:brightness(1.3); }
+  .scene-node.active rect   { stroke-width:3; filter:brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,.25)); }
+  .scene-node.active polygon { stroke-width:3; filter:brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,.25)); }
+
+  /* ── inspector panel — fixed right-side overlay ── */
+  #panel { position:fixed; top:0; right:0; width:360px; height:100vh;
+    transform:translateX(100%); transition:transform .22s ease;
+    background:#161b22; border-left:1px solid #2a3142;
+    display:flex; flex-direction:column; z-index:200; }
+  #panel.open { transform:translateX(0); }
+
+  #ph { padding:14px 16px 12px; border-bottom:1px solid #2a3142; flex-shrink:0; position:relative; }
+  #ph h2 { margin:0 28px 2px 0; font-size:15px; font-weight:600; }
+  #ph .ph-sub { font-size:11px; color:#8b949e; }
+  #ph-close { position:absolute; right:12px; top:12px; background:none; border:none; color:#8b949e;
+    font-size:17px; cursor:pointer; padding:2px 5px; border-radius:4px; line-height:1; }
+  #ph-close:hover { background:#2a3142; color:#e6edf3; }
+
+  #pb { padding:14px 16px; overflow-y:auto; flex:1; font-size:13px; line-height:1.55; }
+  #pb h3 { font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:#8b949e;
+    margin:18px 0 7px; font-weight:600; border-bottom:1px solid #1c2230; padding-bottom:4px; }
+  #pb h3:first-child { margin-top:0; }
+
+  .plain { font-size:13px; color:#cdd9e5; margin:0 0 6px; line-height:1.6; }
+  .tech  { font-size:11.5px; color:#8b949e; margin:0; line-height:1.55; }
+
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10.5px;
+    border:1px solid #2a3142; background:#1c2230; color:#8b949e; margin:2px 3px 2px 0; }
+  .pill.boot { color:#cdd2dc; border-color:#4a5168; background:#252c3d; }
+  .pill.kta  { color:#cbe0ff; border-color:#1f3358; background:#0d1d3a; }
+  .pill.vpt  { color:#ffe2c2; border-color:#583a1f; background:#3a230d; }
+  .pill.warn { color:#ffd2cf; border-color:#5d1a17; background:#3b0f0d; }
+  .pill.ok   { color:#c8f0d2; border-color:#1f4a26; background:#0d2614; }
+  .pill.hub  { color:#f4d8ff; border-color:#4a2060; background:#3a1f4a; }
+
+  .trans-item { padding:7px 9px; margin:5px 0; border:1px solid #2a3142; border-radius:6px;
+    background:#1c2230; }
+  .ti-row { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+  .ti-name { font-size:12px; font-weight:500; color:#e6edf3; }
+  .ti-via  { font-size:10.5px; color:#5a647a; margin-top:2px; }
+  .ti-label{ font-size:10.5px; color:#8b949e; }
+
+  .script-item { padding:5px 8px; margin:4px 0; border:1px solid #2a3142; border-radius:5px;
+    background:#1c2230; font-size:11px; }
+  .si-name { color:#cbe0ff; font-weight:500; }
+  .si-what { color:#8b949e; margin-top:2px; }
+  .si-path { color:#5a647a; font-size:10px; margin-top:1px; }
+
+  .placeholder { color:#8b949e; font-style:italic; text-align:center; padding:32px 0; }
 </style>
 </head>
 <body>
@@ -116,7 +172,7 @@
 
   <div id="header-row">
     <div>
-      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: May 08, 2026 · 11:00 AM EDT</span></h1>
+      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: May 08, 2026 · 04:50 PM EDT</span></h1>
       <div class="sub">Meta Quest VR · two content modes (KTA product showroom / VPT Virtual Plant Tour)</div>
     </div>
     <a id="download-btn" href="hephaestus_scene_client-facing.html" download="hephaestus_scene_client-facing.html">
@@ -128,6 +184,7 @@
     <button class="tab-btn active" onclick="showTab('scene',this)">Scene Flow</button>
     <button class="tab-btn" onclick="showTab('ccd',this)">Addressables &amp; CCD Pipeline</button>
       <button class="tab-btn" onclick="showTab('integrations',this)">Outside Integrations</button>
+      <button class="tab-btn" onclick="showTab('azure',this)">Azure DevOps</button>
       <button class="tab-btn questions" onclick="showTab('questions',this)">Questions</button>
   </div>
 
@@ -154,6 +211,7 @@
       <style>
         .node text         { font-size:13px; fill:#e6edf3; text-anchor:middle; dominant-baseline:central; pointer-events:none; }
         .node .sm          { font-size:10.5px; fill:#8b949e; }
+        .node .pt          { font-size:9px; fill:#7d8694; font-family:ui-monospace,monospace; }
         .boot rect         { fill:#3a3f4a; stroke:#8b949e; stroke-width:2; }
         .hub  polygon      { fill:#3a1f4a; stroke:#ce6cf0; stroke-width:2; }
         .kta  rect         { fill:#0d1d3a; stroke:#4c8bf5; stroke-width:2; }
@@ -182,8 +240,9 @@
     <text class="gl" x="540" y="392">VPT · Virtual Plant Tour (factory walkthrough)</text>
 
     <!-- ── BOOT ── -->
-    <g class="node boot">
+    <g class="node boot scene-node" data-scene="Initialization">
       <rect x="720" y="40" width="200" height="56" rx="6"/>
+      <rect class="hit" x="720" y="40" width="200" height="56" rx="6"/>
       <text x="820" y="60">App Startup</text>
       <text x="820" y="78" class="sm">startup · mode selector</text>
     </g>
@@ -198,33 +257,38 @@
     <text class="ann" x="1340" y="186">VPT mode</text>
 
     <!-- ── HUBS ── -->
-    <g class="node hub" transform="translate(260,278)">
+    <g class="node hub scene-node" data-scene="_Main" transform="translate(260,278)">
       <polygon points="0,-48 108,0 0,48 -108,0"/>
+      <rect class="hit" x="-108" y="-48" width="216" height="96"/>
       <text x="0" y="-8">Showroom Hub</text>
       <text x="0" y="12" class="sm">KTA traffic controller</text>
     </g>
 
-    <g class="node hub" transform="translate(1320,278)">
+    <g class="node hub scene-node" data-scene="_VPT" transform="translate(1320,278)">
       <polygon points="0,-48 108,0 0,48 -108,0"/>
+      <rect class="hit" x="-108" y="-48" width="216" height="96"/>
       <text x="0" y="-8">Tour Hub</text>
       <text x="0" y="12" class="sm">VPT traffic controller</text>
     </g>
 
     <!-- ── KTA scenes ── -->
-    <g class="node kta">
+    <g class="node kta scene-node" data-scene="Lobby">
       <rect x="160" y="448" width="200" height="52" rx="6"/>
+      <rect class="hit" x="160" y="448" width="200" height="52" rx="6"/>
       <text x="260" y="462">Lobby</text>
       <text x="260" y="480" class="sm">entrance · navigation hub</text>
     </g>
 
-    <g class="node kta">
+    <g class="node kta scene-node" data-scene="Commercial">
       <rect x="80"  y="606" width="160" height="52" rx="6"/>
+      <rect class="hit" x="80" y="606" width="160" height="52" rx="6"/>
       <text x="160" y="620">Commercial</text>
       <text x="160" y="638" class="sm">commercial products wing</text>
     </g>
 
-    <g class="node kta">
+    <g class="node kta scene-node" data-scene="Residential">
       <rect x="280" y="606" width="160" height="52" rx="6"/>
+      <rect class="hit" x="280" y="606" width="160" height="52" rx="6"/>
       <text x="360" y="620">Residential</text>
       <text x="360" y="638" class="sm">residential products wing</text>
     </g>
@@ -242,20 +306,23 @@
     <text x="260" y="774" font-size="10" fill="#8b949e" text-anchor="middle">hidden when VPT mode is disabled at build time</text>
 
     <!-- ── VPT entry chain ── -->
-    <g class="node vpt">
+    <g class="node vpt scene-node" data-scene="00_WaitingRoom">
       <rect x="540" y="448" width="240" height="52" rx="6"/>
+      <rect class="hit" x="540" y="448" width="240" height="52" rx="6"/>
       <text x="660" y="462">Waiting Room</text>
       <text x="660" y="480" class="sm">access code gate</text>
     </g>
 
-    <g class="node vpt">
+    <g class="node vpt scene-node" data-scene="01_TourEntrance">
       <rect x="540" y="564" width="240" height="52" rx="6"/>
+      <rect class="hit" x="540" y="564" width="240" height="52" rx="6"/>
       <text x="660" y="578">Tour Entrance</text>
       <text x="660" y="596" class="sm">tour intro · entry vestibule</text>
     </g>
 
-    <g class="node vpt">
+    <g class="node vpt scene-node" data-scene="01_StartingRoom">
       <rect x="540" y="682" width="240" height="52" rx="6"/>
+      <rect class="hit" x="540" y="682" width="240" height="52" rx="6"/>
       <text x="660" y="696">Starting Room</text>
       <text x="660" y="714" class="sm">first factory area</text>
     </g>
@@ -272,37 +339,53 @@
     <text class="ann" x="808" y="540">access code unlocks → Tour Entrance</text>
 
     <!-- ── VPT tour rooms (snake) ── -->
-    <g class="node vpt">
-      <rect x="820"  y="820" width="118" height="44" rx="6"/>
-      <text x="879"  y="846">02 Binder Room</text>
+    <g class="node vpt scene-node" data-scene="02_BinderRoom">
+      <rect x="820"  y="820" width="118" height="48" rx="6"/>
+      <rect class="hit" x="820" y="820" width="118" height="48" rx="6"/>
+      <text x="879"  y="838">02 Binder Room</text>
+      <text x="879"  y="855" class="pt">02_BinderRoom</text>
     </g>
-    <g class="node vpt">
-      <rect x="974"  y="820" width="118" height="44" rx="6"/>
-      <text x="1033" y="846">03 Batch House</text>
+    <g class="node vpt scene-node" data-scene="03_BatchHouse">
+      <rect x="974"  y="820" width="118" height="48" rx="6"/>
+      <rect class="hit" x="974" y="820" width="118" height="48" rx="6"/>
+      <text x="1033" y="838">03 Batch House</text>
+      <text x="1033" y="855" class="pt">03_BatchHouse</text>
     </g>
-    <g class="node vpt">
-      <rect x="1128" y="820" width="118" height="44" rx="6"/>
-      <text x="1187" y="846">04 Furnace</text>
+    <g class="node vpt scene-node" data-scene="04_Furnace">
+      <rect x="1128" y="820" width="118" height="48" rx="6"/>
+      <rect class="hit" x="1128" y="820" width="118" height="48" rx="6"/>
+      <text x="1187" y="838">04 Furnace</text>
+      <text x="1187" y="855" class="pt">04_Furnace</text>
     </g>
-    <g class="node vpt">
-      <rect x="1282" y="820" width="118" height="44" rx="6"/>
-      <text x="1341" y="846">05 Fiberizing</text>
+    <g class="node vpt scene-node" data-scene="05_Fiberizing">
+      <rect x="1282" y="820" width="118" height="48" rx="6"/>
+      <rect class="hit" x="1282" y="820" width="118" height="48" rx="6"/>
+      <text x="1341" y="838">05 Fiberizing</text>
+      <text x="1341" y="855" class="pt">05_Fiberizing</text>
     </g>
-    <g class="node vpt">
-      <rect x="1436" y="820" width="142" height="44" rx="6"/>
-      <text x="1507" y="846">06 Curing &amp; Cooling</text>
+    <g class="node vpt scene-node" data-scene="06_CuringAndCooling">
+      <rect x="1436" y="820" width="142" height="48" rx="6"/>
+      <rect class="hit" x="1436" y="820" width="142" height="48" rx="6"/>
+      <text x="1507" y="838">06 Curing &amp; Cooling</text>
+      <text x="1507" y="855" class="pt">06_CuringAndCooling</text>
     </g>
-    <g class="node vpt">
-      <rect x="1436" y="938" width="142" height="44" rx="6"/>
-      <text x="1507" y="964">07 Cutting</text>
+    <g class="node vpt scene-node" data-scene="07_Cutting">
+      <rect x="1436" y="938" width="142" height="48" rx="6"/>
+      <rect class="hit" x="1436" y="938" width="142" height="48" rx="6"/>
+      <text x="1507" y="956">07 Cutting</text>
+      <text x="1507" y="973" class="pt">07_Cutting</text>
     </g>
-    <g class="node vpt">
-      <rect x="1282" y="938" width="118" height="44" rx="6"/>
-      <text x="1341" y="964">08 Packaging</text>
+    <g class="node vpt scene-node" data-scene="08_Packaging">
+      <rect x="1282" y="938" width="118" height="48" rx="6"/>
+      <rect class="hit" x="1282" y="938" width="118" height="48" rx="6"/>
+      <text x="1341" y="956">08 Packaging</text>
+      <text x="1341" y="973" class="pt">08_Packaging</text>
     </g>
-    <g class="node vpt">
-      <rect x="1128" y="938" width="118" height="44" rx="6"/>
-      <text x="1187" y="964">09 Warehouse</text>
+    <g class="node vpt scene-node" data-scene="09_WarehouseAndDistribution">
+      <rect x="1128" y="938" width="118" height="48" rx="6"/>
+      <rect class="hit" x="1128" y="938" width="118" height="48" rx="6"/>
+      <text x="1187" y="956">09 Warehouse</text>
+      <text x="1187" y="973" class="pt">09_WarehouseAndDistribution</text>
     </g>
 
     <!-- StartingRoom → 02 BinderRoom -->
@@ -317,11 +400,11 @@
     <path class="e-p" d="M1400,842 H1434"/>
 
     <!-- 06 → 07 -->
-    <path class="e-p" d="M1507,864 V936"/>
+    <path class="e-p" d="M1507,868 V936"/>
 
     <!-- bottom row: 07→08→09 -->
-    <path class="e-p" d="M1436,960 H1402"/>
-    <path class="e-p" d="M1282,960 H1248"/>
+    <path class="e-p" d="M1436,962 H1402"/>
+    <path class="e-p" d="M1282,962 H1248"/>
 
     <!-- Facility Map -->
     <path class="rb" d="M540,1038 V1028 H1578 V1038"/>
@@ -957,15 +1040,466 @@
   </div><!-- /max-width -->
   </div><!-- /tab-questions -->
 
+  <!-- ══════════════════ AZURE DEVOPS TAB ══════════════════ -->
+  <div id="tab-azure" class="tab-panel">
+  <div style="max-width:900px; margin-top:4px;">
+
+    <p style="font-size:13px;color:#8b949e;line-height:1.65;margin:0 0 28px;">
+      The <code>quest-app</code> repository on Azure DevOps is the source of truth for all KTA and VPT Unity project code.
+      Unity Cloud Build pulls from this repo via a Personal Access Token to produce APKs.<br><br>
+      <strong style="color:#cdd9e5;">Current local status:</strong> The local project was initially cloned from
+      Makeway's GitHub (<code>makeway-agency/knauf</code>). As of May 2026, the local git remote is still pointing
+      to GitHub only — Azure DevOps has not yet been added as a remote. Pending confirmation from Makeway on
+      which repo is the active source of truth before switching over.
+      Once confirmed, GitHub will be fully bypassed — all pushes and pulls will go to Azure DevOps, and
+      GitHub will no longer receive any updates.
+    </p>
+
+    <!-- ── OVERVIEW ── -->
+    <div class="q-section">
+      <div class="q-section-title">Repository Overview</div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">LOCATION</span>
+        <p class="q-q">Azure Organization: Rightpoint &nbsp;·&nbsp; Project: KNI - VR Training &nbsp;·&nbsp; Repo: quest-app</p>
+        <p class="q-context">
+          Full path: <code>dev.azure.com/rightpoint/KNI%20-%20VR%20Training/_git/quest-app</code><br><br>
+          The codebase was migrated from Subvrsive's GitHub to this Azure DevOps repo in December 2025
+          as part of the agency handover. Unity Cloud Services connects to this repo via a Personal Access
+          Token (PAT) to run cloud builds. The PAT has been verified as active and valid as of May 2026.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">PROJECT STRUCTURE</span>
+        <p class="q-q">Key folders inside the repo</p>
+        <p class="q-context">
+          <code>.github/workflows/</code> — <strong style="color:#f85149;">Legacy / dead code.</strong>
+          GitHub Actions workflow files carried over from the original GitHub repo during migration.
+          Azure DevOps completely ignores this folder. Last commit May 6, 2024.<br><br>
+          <code>hephaestus/</code> — <strong style="color:#3fb950;">Unity project root.</strong>
+          Contains <code>Assets/</code>, <code>CloudCodeModules/</code>, <code>Packages/</code>,
+          <code>ProjectSettings/</code>, plus <code>.gitattributes</code> (Git LFS rules for MP4s),
+          <code>.gitignore</code>, and <code>knaufkey.keystore</code> (Android APK signing key).<br><br>
+          Unity Cloud Build targets <code>hephaestus/</code> as the project subfolder,
+          running Unity <code>2022.3.62f2</code> on Windows 11 22H2.
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">BRANCHES</span>
+        <p class="q-q">Required branches for the build pipeline</p>
+        <p class="q-context">
+          <code>main</code> — active development branch<br>
+          <code>release</code> — KTA production builds (merge <code>main</code> → <code>release</code> before triggering a KTA build)<br>
+          <code>release-vpt</code> — VPT production builds (merge <code>main</code> → <code>release-vpt</code> before triggering a VPT build)
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── ACCESS ── -->
+    <div class="q-section">
+      <div class="q-section-title">Access Requirements</div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">PORTAL ACCESS</span>
+        <p class="q-q">Browser access to the Azure DevOps dashboard</p>
+        <p class="q-context">
+          Access is via <code>dev@makeway.is</code> — confirmed registered and active as of May 2026.
+          Log in at <code>dev.azure.com</code>. The account is treated as an external user on
+          Rightpoint's Azure DevOps organization.
+        </p>
+      </div>
+
+      <div class="q-card flag-teal">
+        <span class="q-tag teal">UNITY CLOUD CONNECTION</span>
+        <p class="q-q">How Unity Cloud Build connects to this repo</p>
+        <p class="q-context">
+          <strong>Provider:</strong> Azure<br>
+          <strong>Organization:</strong> Rightpoint<br>
+          <strong>Project:</strong> KNI - VR Training<br>
+          <strong>Repository:</strong> KNI - VR Training/quest-app<br>
+          <strong>PAT:</strong> Verified active (green checkmark) as of May 2026. Managed by Ryan Britt at Knauf.<br><br>
+          Git executable is set to <code>Cygwin</code> on the build server.
+        </p>
+      </div>
+
+      <div class="q-card flag-amber">
+        <span class="q-tag amber">LOCAL REMOTE — PENDING</span>
+        <p class="q-q">Local project currently points to Makeway GitHub — needs to switch to Azure DevOps</p>
+        <p class="q-context">
+          Confirmed via <code>git remote -v</code> (May 12, 2026): the local Unity project has a single remote:<br><br>
+          <code>origin → https://github.com/makeway-agency/knauf.git</code><br><br>
+          Azure DevOps is not yet configured as a remote. Once Makeway confirms Azure DevOps is the source
+          of truth, two options:<br><br>
+          <strong>Option A — Add as second remote (no reclone needed):</strong><br>
+          <code>git remote add azure https://rightpoint@dev.azure.com/rightpoint/KNI-VR%20Training/_git/quest-app</code><br>
+          Then push with <code>git push azure main</code><br><br>
+          <strong>Option B — Reclone from Azure DevOps (if repos have diverged):</strong><br>
+          Fresh clone via SSH (see SSH guide below). Required only if Azure DevOps has commits
+          not present in the local copy.<br><br>
+          After switching, Makeway GitHub is completely bypassed — no further updates will be pushed there.
+        </p>
+      </div>
+
+      <div class="q-card flag-green">
+        <span class="q-tag green">✓ PAYMENT RESOLVED</span>
+        <p class="q-q">Unity Cloud Services payment method — resolved May 2026</p>
+        <p class="q-context">
+          The Knauf Virtual Reality Experiences Unity Cloud account had a payment failure warning
+          that has since been resolved. The build pipeline is unaffected and fully operational.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── SSH CONNECTION ── -->
+    <div class="q-section">
+      <div class="q-section-title">Connecting Locally via SSH (Windows 11)</div>
+
+      <p style="font-size:12px;color:#8b949e;margin:0 0 16px;line-height:1.6;">
+        Azure DevOps only supports <strong>RSA</strong> SSH keys (not ed25519). Follow these steps
+        to clone the repo to your local machine. Requires Git for Windows and Git LFS.
+      </p>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 1 — Install Git &amp; Git LFS</span>
+        <p class="q-context">
+          Download Git for Windows from <code>git-scm.com/download/win</code> — Git LFS is bundled
+          in this installer. After installing, open PowerShell and run:<br><br>
+          <code>git lfs install</code>
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 2 — Generate RSA SSH Key</span>
+        <p class="q-context">
+          In PowerShell, run:<br><br>
+          <code>ssh-keygen -t rsa -b 4096 -C "dev@makeway.is" -f "$HOME/.ssh/id_rsa"</code><br><br>
+          Press Enter to skip passphrase (or set one for extra security).
+          This creates two files in <code>C:\Users\YourName\.ssh\</code>:<br>
+          <code>id_rsa</code> — private key (never share)<br>
+          <code>id_rsa.pub</code> — public key (this is what you share)
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 3 — Start SSH Agent &amp; Add Key</span>
+        <p class="q-context">
+          <code>Get-Service ssh-agent | Start-Service</code><br>
+          <code>ssh-add "$HOME/.ssh/id_rsa"</code>
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 4 — Copy Public Key</span>
+        <p class="q-context">
+          <code>cat "$HOME/.ssh/id_rsa.pub"</code><br><br>
+          Copy the entire output (starts with <code>ssh-rsa</code>). Do not include any extra spaces or line breaks.
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 5 — Add Key to Azure DevOps</span>
+        <p class="q-context">
+          1. Go to <code>dev.azure.com</code> and log in<br>
+          2. Click your profile icon → <strong>SSH public keys</strong><br>
+          3. Click <strong>+ New Key</strong><br>
+          4. Give it a name (e.g. "Makeway Dev Windows")<br>
+          5. Paste your public key and click <strong>Save</strong>
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 6 — Get SSH Clone URL &amp; Clone</span>
+        <p class="q-context">
+          1. Go to the <code>quest-app</code> repo in Azure DevOps<br>
+          2. Click <strong>Clone</strong> → switch to the <strong>SSH</strong> tab → copy the SSH URL<br><br>
+          Then in PowerShell:<br>
+          <code>git clone &lt;SSH URL&gt;</code><br>
+          <code>cd quest-app</code><br>
+          <code>git lfs fetch origin --all</code>
+        </p>
+      </div>
+
+      <div class="q-card flag-grey">
+        <span class="q-tag grey">STEP 7 — Verify Connection</span>
+        <p class="q-context">
+          <code>ssh -T git@ssh.dev.azure.com</code><br><br>
+          A successful response confirms the SSH connection is working.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ── BUILD PIPELINE ── -->
+    <div class="q-section">
+      <div class="q-section-title">Build &amp; Deploy Pipeline</div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">FULL PIPELINE</span>
+        <p class="q-q">End-to-end flow from code change to headset</p>
+        <p class="q-context">
+          1. Make code changes locally → push to <code>quest-app</code> repo on Azure DevOps<br>
+          2. Merge <code>main</code> → <code>release</code> (KTA) or <code>release-vpt</code> (VPT)<br>
+          3. Trigger a Clean Build in Unity Cloud Build Automation<br>
+          4. Wait ~2 hours (KTA) or ~2.5 hours (VPT) for build to complete<br>
+          5. Download the <code>.apk</code> from Unity Cloud (three-dot menu → Download .APK)<br>
+          6. Open Meta Quest Developer Hub → App Distribution tab<br>
+          7. Select the appropriate app → Upload to <strong>Business channel</strong><br>
+          8. Wait ~20 minutes for Meta servers to process<br>
+          9. Build automatically distributes to all enrolled headsets in the relevant device group
+        </p>
+      </div>
+
+      <div class="q-card flag-blue">
+        <span class="q-tag blue">BUILD CONFIGURATIONS</span>
+        <p class="q-q">Available build targets in Unity Cloud</p>
+        <p class="q-context">
+          <strong>KTA:</strong><br>
+          <code>KTA - Staging</code> — internal QA<br>
+          <code>KTA - Development</code> — active development builds<br>
+          <code>KTA - Primary Review</code> — Alpha/Beta client preview<br>
+          <code>KTA - Secondary Review</code> — wider Knauf stakeholder preview<br>
+          <code>KTA - Production</code> — live release to 130+ headsets<br><br>
+          <strong>VPT:</strong><br>
+          <code>VPT - Staging</code> — internal QA<br>
+          <code>VPT - Development</code> — active development builds<br>
+          <code>VPT - Primary Review</code> — client preview<br>
+          <code>VPT - Secondary Review</code> — wider review<br>
+          <code>VPT - Production</code> — live release (currently: Mickey Chastain, Scott Stillabower, Ryan Britt)
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  </div><!-- /tab-azure -->
+
+</div>
+<!-- ══ INSPECTOR PANEL (fixed overlay) ══ -->
+<div id="panel">
+  <div id="ph">
+    <h2 id="ph-title">Inspector</h2>
+    <div class="ph-sub" id="ph-sub">Select a scene</div>
+    <button id="ph-close">✕</button>
+  </div>
+  <div id="pb">
+    <p class="placeholder">Click any coloured scene box to see what it is, what it does, and how it connects to other scenes.</p>
+  </div>
 </div>
 <script>
-function showTab(id, btn){
-  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
-}
-</script>
-<div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#4a5168;letter-spacing:.4px;">by Samar Shool</div>
-</body>
-</html>
+// ── Scene data ────────────────────────────────────────────────────────────────
+var D = {
+  "Initialization": {
+    group:"boot", groupLabel:"Boot",
+    build:0, addr:null,
+    plain:"The very first thing that runs when the headset launches the app. It checks a single on/off switch (VPTSettings) to decide which experience to load — the product showroom (KTA) or the factory tour (VPT).",
+    tech:"Initializer.cs reads VPTSettings.IsEnabled and calls the matching Addressable LoadSceneAsync. The XR rig lives in each playable scene; XRRigTransform (singleton) destroys duplicates on Awake.",
+    scripts:[
+      {name:"Initializer.cs", path:"Assets/_Project/Scripts/SceneManagement/Initializer.cs", what:"Reads VPTSettings, loads _Main or _VPT via Addressable AssetReference"},
+      {name:"VPTSettings.cs", path:"Assets/_Project/Scripts/Utilities/VPTSettings.cs", what:"ScriptableObject holding _isEnabled (currently 0 = OFF)"}
+    ],
+    out:[
+      {to:"_Main", kind:"boot", label:"VPTSettings.IsEnabled = false (current)", via:"Initializer.cs → _mainSceneReference.LoadSceneAsync()"},
+      {to:"_VPT",  kind:"boot", label:"VPTSettings.IsEnabled = true",            via:"Initializer.cs → _vptSceneReference.LoadSceneAsync()"}
+    ], in:[]
+  },
+  "_Main": {
+    group:"hub", groupLabel:"KTA Master Hub",
+    build:1, addr:null,
+    plain:"The master scene for the KTA product showroom. It acts as a traffic controller — it doesn't contain visible 3D content itself, but it holds the state machine that decides which showroom area (Lobby, Commercial, Residential) to load next.",
+    tech:"Contains _MainManagers > _MainStateManager. Holds ScenePortalData refs for Lobby, Commercial, Residential, and the optional VPT cross-over. Loaded additively on top of Initialization.",
+    scripts:[
+      {name:"_MainStateManager (prefab)", path:"Assets/_Project/Prefabs/State Machines/_Main/_MainStateManager.prefab", what:"Holds portal refs for all KTA destinations + VPT"},
+      {name:"ScenePortalDictionary.cs",   path:"Assets/_Project/Scripts/State Machines/_Main/ScenePortalDictionary.cs", what:"Dictionary mapping portal types to ScenePortalData assets"}
+    ],
+    in:[{from:"Initialization", kind:"boot", label:"VPTSettings.IsEnabled = false", via:"Initializer.cs → _mainSceneReference.LoadSceneAsync()"}],
+    out:[
+      {to:"Lobby",       kind:"state", label:"_MainStateManager", via:"_MainStateManager.prefab holds Lobby ScenePortalData ref"},
+      {to:"Commercial",  kind:"state", label:"_MainStateManager", via:"_MainStateManager.prefab holds Commercial ScenePortalData ref"},
+      {to:"Residential", kind:"state", label:"_MainStateManager", via:"_MainStateManager.prefab holds Residential ScenePortalData ref"},
+      {to:"_VPT",        kind:"state", label:"_MainStateManager (VPT entry)", via:"_MainStateManager.prefab holds VPT ScenePortalData ref"}
+    ]
+  },
+  "_VPT": {
+    group:"hub", groupLabel:"VPT Master Hub",
+    build:null, addr:"VPT Local Scenes",
+    plain:"The master scene for the Virtual Plant Tour. Like _Main, it's a traffic controller — it runs the central VPT state machine that knows about all 10 factory rooms and routes the player between them. You can also reach it directly from the Lobby's 'Enter VPT' button.",
+    tech:"Contains _VPTManagers > _VPTRoomManager — central VPT state machine. References all 10 room ScenePortalData assets. Reachable from Initialization (VPT mode), _Main (state), or Lobby (UI button).",
+    scripts:[
+      {name:"_VPTRoomManager (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Common/_VPTRoomManager.prefab", what:"Central VPT state machine — holds refs to all room ScenePortalData assets"},
+      {name:"VPTStateMachine.cs",       path:"Assets/_Project/Scripts/State Machines/VPT/VPTStateMachine.cs", what:"Top-level VPT state machine logic"}
+    ],
+    in:[
+      {from:"Initialization", kind:"boot",  label:"VPTSettings.IsEnabled = true",  via:"Initializer.cs → _vptSceneReference.LoadSceneAsync()"},
+      {from:"_Main",          kind:"state", label:"_MainStateManager (VPT entry)", via:"_MainStateManager.prefab holds VPT ScenePortalData ref"},
+      {from:"Lobby",          kind:"ui",    label:"Lobby Main Menu — Enter VPT", via:"Main Menu - Lobby Variant.prefab → VPT ScenePortalData"}
+    ],
+    out:[
+      {to:"00_WaitingRoom",              kind:"state", label:"WaitingRoomLoadingPhase", via:"_VPTRoomManager.prefab + WaitingRoomLoadingPhase.cs OnEnter"},
+      {to:"01_StartingRoom",             kind:"ui", label:"Facility Map menu", via:"Map Toggle - Starting Room Variant.prefab"},
+      {to:"02_BinderRoom",               kind:"ui", label:"Facility Map menu", via:"Map Toggle - Binder Room Variant.prefab"},
+      {to:"03_BatchHouse",               kind:"ui", label:"Facility Map menu", via:"Map Toggle - Batch House Variant.prefab"},
+      {to:"04_Furnace",                  kind:"ui", label:"Facility Map menu", via:"Map Toggle - Furnace Variant.prefab"},
+      {to:"05_Fiberizing",               kind:"ui", label:"Facility Map menu", via:"Map Toggle - Fiberizing Variant.prefab"},
+      {to:"06_CuringAndCooling",         kind:"ui", label:"Facility Map menu", via:"Map Toggle - Curing and Cooling Variant.prefab"},
+      {to:"07_Cutting",                  kind:"ui", label:"Facility Map menu", via:"Map Toggle - Cutting Variant.prefab"},
+      {to:"08_Packaging",                kind:"ui", label:"Facility Map menu", via:"Map Toggle - Packaging Variant.prefab"},
+      {to:"09_WarehouseAndDistribution", kind:"ui", label:"Facility Map menu", via:"Map Toggle - Warehouse Variant.prefab"}
+    ]
+  },
+  "Lobby": {
+    group:"kta", groupLabel:"KTA",
+    build:4, addr:null,
+    plain:"The entrance hall of the KTA product showroom. The player lands here after the app boots into KTA mode. From the Lobby they can walk into the Commercial or Residential showroom wings, or choose to enter the factory tour (if VPT is enabled in the build).",
+    tech:"Contains LobbyStateManager (LobbyExploringPhase). Lobby Main Menu Variant holds the Enter VPT button, which VPTPortalButton.cs hides in KTA-only builds.",
+    scripts:[
+      {name:"LobbyExploringPhase (prefab)", path:"Assets/_Project/Prefabs/State Machines/Lobby/Phases/LobbyExploringPhase.prefab", what:"References Commercial and Residential portals"},
+      {name:"Main Menu - Lobby Variant (prefab)", path:"Assets/_Project/Prefabs/UI/Main Menu/Main Menu - Lobby Variant.prefab", what:"UI menu — includes Enter VPT button"},
+      {name:"VPTPortalButton.cs", path:"Assets/_Project/Scripts/Portal/VPTPortalButton.cs", what:"Hides the VPT entry button when VPTSettings.IsEnabled = false"}
+    ],
+    in:[
+      {from:"_Main",       kind:"state", label:"_MainStateManager", via:"_MainStateManager.prefab holds Lobby ScenePortalData ref"},
+      {from:"Commercial",  kind:"state", label:"CommercialExploringModule (return)", via:"CommercialExploringModule.prefab + physical portal + Exit menu"},
+      {from:"Residential", kind:"ui",    label:"Exit menu (return)", via:"Menu - Exit Screen.prefab / Menu - Exit Panel.prefab"}
+    ],
+    out:[
+      {to:"Commercial",  kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"},
+      {to:"Residential", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"},
+      {to:"_VPT",        kind:"ui",    label:"Lobby Main Menu — Enter VPT", via:"Main Menu - Lobby Variant.prefab → VPT ScenePortalData"}
+    ]
+  },
+  "Commercial": {
+    group:"kta", groupLabel:"KTA",
+    build:2, addr:null,
+    plain:"The commercial products wing of the showroom. Here players can explore Knauf insulation products used in commercial buildings — things like ceiling tiles, wall insulation, and acoustic panels. They can return to the Lobby by walking through a physical portal or using the exit menu.",
+    tech:"Contains CommercialExploringModule state machine. Return to Lobby via CommercialExploringModule.prefab, EnvironmentPortal_Narrow physical XR portal, LobbyPortal Variant, or Exit menu.",
+    scripts:[
+      {name:"CommercialExploringModule (prefab)", path:"Assets/_Project/Prefabs/State Machines/Commercial/Exploring Module/CommercialExploringModule.prefab", what:"References Lobby portal for return nav"},
+      {name:"EnvironmentPortal_Narrow (prefab)",  path:"Assets/_Project/Prefabs/Portals/EnvironmentPortal_Narrow.prefab", what:"Physical walk-through XR portal back to Lobby"},
+      {name:"Menu - Exit Screen (prefab)",        path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Screen.prefab", what:"Exit menu return to Lobby"}
+    ],
+    in:[{from:"Lobby", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"}],
+    out:[{to:"Lobby", kind:"state", label:"CommercialExploringModule (return)", via:"CommercialExploringModule.prefab + portal + Exit menu"}]
+  },
+  "Residential": {
+    group:"kta", groupLabel:"KTA",
+    build:3, addr:null,
+    plain:"The residential products wing of the showroom. Players explore Knauf insulation products used in homes — loft insulation, wall cavity products, acoustic solutions for houses and flats. Return to Lobby via the exit menu.",
+    tech:"Returns to Lobby via the shared Menu - Exit Screen / Menu - Exit Panel prefabs.",
+    scripts:[
+      {name:"Menu - Exit Screen (prefab)", path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Screen.prefab", what:"Exit menu — shared across KTA scenes"},
+      {name:"Menu - Exit Panel (prefab)",  path:"Assets/_Project/Prefabs/UI/Main Menu/Exit Menu/Menu - Exit Panel.prefab", what:"Exit panel"}
+    ],
+    in:[{from:"Lobby", kind:"state", label:"LobbyExploringPhase + Explore screen", via:"LobbyExploringPhase.prefab + Menu - Explore Screen.prefab"}],
+    out:[{to:"Lobby", kind:"ui", label:"Exit menu (return)", via:"Menu - Exit Screen.prefab / Menu - Exit Panel.prefab"}]
+  },
+  "00_WaitingRoom": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Local Scenes",
+    plain:"The starting point of the factory tour. The player arrives in a waiting area and must enter an access code on a wall panel to be granted entry into the plant. This acts as a security/authorisation gate before the tour begins — once the code is accepted, the doors open and you move on.",
+    tech:"Hosts WaitingRoomStateMachine with WaitingRoomLoadingPhase, WaitingRoomAccessCodePhase, and WaitingRoomOpenDoorsPhase. OnAccessGranted → LoadSceneAsync(TourEntrance).",
+    scripts:[
+      {name:"WaitingRoomStateMachine.cs",    path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomStateMachine.cs", what:"Top-level waiting room state machine"},
+      {name:"WaitingRoomLoadingPhase.cs",    path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomLoadingPhase.cs", what:"OnEnter → SceneLoader.LoadSceneAsync(waitingRoomPortalData)"},
+      {name:"WaitingRoomAccessCodePhase.cs", path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomAccessCodePhase.cs", what:"OnAccessGranted → LoadSceneAsync → 01_TourEntrance"},
+      {name:"WaitingRoomOpenDoorsPhase.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/WaitingRoomOpenDoorsPhase.cs", what:"Animates doors before entering"}
+    ],
+    in:[{from:"_VPT", kind:"state", label:"WaitingRoomLoadingPhase", via:"_VPTRoomManager.prefab + WaitingRoomLoadingPhase.cs OnEnter"}],
+    out:[{to:"01_TourEntrance", kind:"state", label:"Access code granted", via:"WaitingRoomAccessCodePhase.cs + AccessPanelPhase.prefab"}]
+  },
+  "01_TourEntrance": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The vestibule you pass through after the access code is accepted. It's a short transition space between the waiting room and the actual factory floor — think of it as the airlock or changing-room area before entering the plant. It then triggers the load of the main starting room.",
+    tech:"StartingRoomAditivePortal.cs listens to the authorization event and calls LoadSceneAsync(startingRoomPortalData). The physical portal is labelled StartingRoom but actually loads this → 01_StartingRoom chain.",
+    scripts:[
+      {name:"StartingRoomAditivePortal.cs",      path:"Assets/_Project/Scripts/Portal/StartingRoomAditivePortal.cs", what:"TODO/temp — listens to authorization event → LoadSceneAsync(startingRoomPortalData)"},
+      {name:"TourEntranceAditiveSetupPhase.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/TourEntranceAditiveSetupPhase.cs", what:"Additive setup phase for tour entrance"},
+      {name:"TourEntranceStandardSetupPhase.cs", path:"Assets/_Project/Scripts/State Machines/VPT/TourEntranceStandardSetupPhase.cs", what:"Standard setup phase for tour entrance"}
+    ],
+    in:[{from:"00_WaitingRoom", kind:"state", label:"Access code granted", via:"WaitingRoomAccessCodePhase.cs + AccessPanelPhase.prefab + StartingRoomPortal Variant.prefab"}],
+    out:[{to:"01_StartingRoom", kind:"state", label:"StartingRoomAditivePortal (TODO/temp)", via:"StartingRoomAditivePortal.cs → LoadSceneAsync fallback (not Addressable)"}]
+  },
+  "01_StartingRoom": {
+    group:"vpt", groupLabel:"VPT ⚠",
+    build:null, addr:null, addrWarn:true,
+    plain:"The main starting point inside the factory itself. This is where the linear tour loop begins — from here you walk through physical portal doorways to move from room to room through the manufacturing process. You can also jump directly to any room using the Facility Map menu. ⚠ Note: this scene is missing from the Addressables system, so it loads via a slower fallback — flagged as a TODO by the dev team.",
+    tech:"NOT in any Addressable group. Loaded via SceneManager.LoadSceneAsync fallback in SceneLoader.cs. StartingRoomAditivePortal.cs is marked TODO/temporary. StartingRoomStateMachine.cs manages the room.",
+    scripts:[
+      {name:"StartingRoomStateMachine.cs",  path:"Assets/_Project/Scripts/State Machines/VPT/StartingRoomStateMachine.cs", what:"Starting room state machine"},
+      {name:"StartingRoomAditivePortal.cs", path:"Assets/_Project/Scripts/Portal/StartingRoomAditivePortal.cs", what:"Loads this scene — marked TODO, should become Addressable"},
+      {name:"SceneLoader.cs",              path:"Assets/_Project/Scripts/SceneManagement/SceneLoader.cs", what:"Falls back to SceneManager.LoadSceneAsync when no Addressable address found"},
+      {name:"BinderRoomPortal Variant",    path:"Assets/_Project/Prefabs/Portals/VPT/BinderRoomPortal Variant.prefab", what:"Physical XR portal → 02_BinderRoom"}
+    ],
+    in:[
+      {from:"01_TourEntrance", kind:"state", label:"StartingRoomAditivePortal (fallback)", via:"StartingRoomAditivePortal.cs → SceneManager.LoadSceneAsync"},
+      {from:"_VPT",           kind:"ui",    label:"Facility Map menu", via:"Map Toggle - Starting Room Variant.prefab"}
+    ],
+    out:[{to:"02_BinderRoom", kind:"portal", label:"BinderRoomPortal Variant", via:"_VPTRoomManager.prefab + BinderRoomPortal Variant.prefab (physical XR portal)"}]
+  },
+  "02_BinderRoom": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The binder room. In real insulation manufacturing, 'binder' is a liquid glue-like substance that gets sprayed onto the glass fibres to hold them together and give the insulation its shape and stiffness. This room shows and explains that process. You can walk forward to the Batch House or step back to the Starting Room.",
+    tech:"BinderRoomExplore phase references BatchHouse (forward) and StartingRoom (back) portals. Shared RoomExplorePhase.cs base class.",
+    scripts:[
+      {name:"BinderRoomExplore (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/BinderRoom/BinderRoomExplore.prefab", what:"References BatchHouse (forward) + StartingRoom (back) portals"},
+      {name:"BatchHousePortal Variant",   path:"Assets/_Project/Prefabs/Portals/VPT/BatchHousePortal Variant.prefab", what:"Physical XR portal → 03_BatchHouse"},
+      {name:"RoomExplorePhase.cs",        path:"Assets/_Project/Scripts/State Machines/VPT/RoomExplorePhase.cs", what:"Shared explore phase base class used by all VPT rooms"}
+    ],
+    in:[
+      {from:"01_StartingRoom", kind:"portal", label:"BinderRoomPortal Variant", via:"_VPTRoomManager.prefab + BinderRoomPortal Variant.prefab"},
+      {from:"03_BatchHouse",   kind:"portal", label:"BinderRoomExplore (back nav)", via:"BinderRoomExplore.prefab references StartingRoom portal"},
+      {from:"_VPT",           kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Binder Room Variant.prefab"}
+    ],
+    out:[
+      {to:"03_BatchHouse",   kind:"portal", label:"BinderRoomExplore (forward)", via:"BinderRoomExplore.prefab + BatchHousePortal Variant.prefab"},
+      {to:"01_StartingRoom", kind:"portal", label:"BinderRoomExplore (back)",    via:"BinderRoomExplore.prefab references StartingRoom portal"}
+    ]
+  },
+  "03_BatchHouse": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The batch house. This is where the raw materials — mainly sand, limestone, soda ash, and recycled glass — are precisely weighed and mixed together (the 'batch') before being fed into the furnace for melting. Think of it as the kitchen before the cooking starts.",
+    tech:"Bidirectional nav: forward to Furnace via FurnacePortal Variant, back to BinderRoom. Also directly accessible via Facility Map menu (Menu - Facility Map Screen.prefab).",
+    scripts:[
+      {name:"FurnacePortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/FurnacePortal Variant.prefab", what:"Physical XR portal → 04_Furnace"},
+      {name:"RoomExplorePhase.cs",   path:"Assets/_Project/Scripts/State Machines/VPT/RoomExplorePhase.cs", what:"Shared explore phase base class"}
+    ],
+    in:[
+      {from:"02_BinderRoom", kind:"portal", label:"BinderRoomExplore (forward)", via:"BinderRoomExplore.prefab + BatchHousePortal Variant.prefab"},
+      {from:"04_Furnace",    kind:"portal", label:"FurnaceRoomExplore (back nav)", via:"FurnaceRoomExplore.prefab references BatchHouse portal"},
+      {from:"_VPT",         kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Batch House Variant.prefab + Menu - Facility Map Screen.prefab"}
+    ],
+    out:[
+      {to:"04_Furnace",    kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnacePortal Variant.prefab"},
+      {to:"02_BinderRoom", kind:"portal", label:"back nav", via:"State machine back portal ref"}
+    ]
+  },
+  "04_Furnace": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The furnace room. The mixed raw materials are fed into a giant furnace and melted at around 1,400°C — hot enough to turn sand and glass into a liquid. This is the heart of the manufacturing process and one of the most dramatic parts of the tour to see in VR. From here the molten glass moves on to be spun into fibres.",
+    tech:"FurnaceRoomExplore phase references BatchHouse (back) and Fiberization (forward) portals. FiberizingRoomPortal Variant → 05_Fiberizing.",
+    scripts:[
+      {name:"FurnaceRoomExplore (prefab)",  path:"Assets/_Project/Prefabs/State Machines/VPT/Furnace/FurnaceRoomExplore.prefab", what:"References BatchHouse (back) + Fiberization (forward) portals"},
+      {name:"FiberizingRoomPortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/FiberizingRoomPortal Variant.prefab", what:"Physical XR portal → 05_Fiberizing"}
+    ],
+    in:[
+      {from:"03_BatchHouse", kind:"portal", label:"forward from BatchHouse", via:"FurnacePortal Variant.prefab"},
+      {from:"05_Fiberizing", kind:"portal", label:"Fiberization_RoomExplore (back nav)", via:"Fiberization_RoomExplore Variant.prefab references Furnace portal"},
+      {from:"_VPT",         kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Furnace Variant.prefab"}
+    ],
+    out:[
+      {to:"05_Fiberizing", kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnaceRoomExplore.prefab + FiberizingRoomPortal Variant.prefab"},
+      {to:"03_BatchHouse", kind:"portal", label:"FurnaceRoomExplore (back)",    via:"FurnaceRoomExplore.prefab references BatchHouse portal"}
+    ]
+  },
+  "05_Fiberizing": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The fiberizing room (also called fiberisation). Here the molten glass from the furnace is spun at high speed — like candy floss — to form incredibly thin glass fibres. These fibres are the core material of Knauf's glass wool insulation products. The binder from the Binder Room is sprayed on at this stage to stick the fibres together.",
+    tech:"Fiberization_RoomExplore Variant references CuringAndCooling (forwar
