@@ -172,7 +172,7 @@
 
   <div id="header-row">
     <div>
-      <h1>Knauf VR Training Academy — Project Overview <span style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: May 08, 2026 · 04:50 PM EDT</span></h1>
+      <h1>Knauf VR Training Academy — Project Overview <span id="last-updated" style="font-size:13px;color:#4a5168;font-weight:400;margin-left:8px;">Last updated: —</span></h1>
       <div class="sub">Meta Quest VR · two content modes (KTA product showroom / VPT Virtual Plant Tour)</div>
     </div>
     <a id="download-btn" href="hephaestus_scene_client-facing.html" download="hephaestus_scene_client-facing.html">
@@ -1658,6 +1658,15 @@ function showTab(id, btn){
   btn.classList.add('active');
   if(id !== 'scene'){ closePanel(); }
 }
+
+// ── Last updated timestamp ─────────────────────────────────────────────────
+(function(){
+  var d = new Date(document.lastModified);
+  if(!isNaN(d)){
+    var opts = { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' };
+    document.getElementById('last-updated').textContent = 'Last updated: ' + d.toLocaleString('en-US', opts);
+  }
+})();
 </script>
 <div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#4a5168;letter-spacing:.4px;">by Samar Shool</div>
 </body>
