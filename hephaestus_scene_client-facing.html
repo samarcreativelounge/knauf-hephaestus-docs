@@ -1048,25 +1048,21 @@
       The <code>quest-app</code> repository on Azure DevOps is the source of truth for all KTA and VPT Unity project code.
       Unity Cloud Build pulls from this repo via a Personal Access Token to produce APKs.<br><br>
       <strong style="color:#cdd9e5;">Current local status:</strong> The local project was initially cloned from
-      Makeway's GitHub (<code>makeway-agency/knauf</code>). As of May 2026, the local git remote is still pointing
-      to GitHub only — Azure DevOps has not yet been added as a remote. Pending confirmation from Makeway on
-      which repo is the active source of truth before switching over.
-      Once confirmed, GitHub will be fully bypassed — all pushes and pulls will go to Azure DevOps, and
-      GitHub will no longer receive any updates.
+      Makeway&#39;s GitHub (<code>makeway-agency/knauf</code>). As of May 2026, the local git remote is still pointing
+      to GitHub only. Pending confirmation from Makeway on which repo is the active source of truth before switching over.
+      Once confirmed, GitHub will be fully bypassed.
     </p>
 
-    <!-- ── OVERVIEW ── -->
     <div class="q-section">
       <div class="q-section-title">Repository Overview</div>
 
       <div class="q-card flag-blue">
         <span class="q-tag blue">LOCATION</span>
-        <p class="q-q">Azure Organization: Rightpoint &nbsp;·&nbsp; Project: KNI - VR Training &nbsp;·&nbsp; Repo: quest-app</p>
+        <p class="q-q">Azure Organization: Rightpoint &nbsp;&middot;&nbsp; Project: KNI - VR Training &nbsp;&middot;&nbsp; Repo: quest-app</p>
         <p class="q-context">
           Full path: <code>dev.azure.com/rightpoint/KNI%20-%20VR%20Training/_git/quest-app</code><br><br>
-          The codebase was migrated from Subvrsive's GitHub to this Azure DevOps repo in December 2025
-          as part of the agency handover. Unity Cloud Services connects to this repo via a Personal Access
-          Token (PAT) to run cloud builds. The PAT has been verified as active and valid as of May 2026.
+          Migrated from Subvrsive&#39;s GitHub to Azure DevOps in December 2025 as part of the agency handover.
+          Unity Cloud Services connects via a Personal Access Token (PAT) verified active as of May 2026.
         </p>
       </div>
 
@@ -1074,15 +1070,13 @@
         <span class="q-tag blue">PROJECT STRUCTURE</span>
         <p class="q-q">Key folders inside the repo</p>
         <p class="q-context">
-          <code>.github/workflows/</code> — <strong style="color:#f85149;">Legacy / dead code.</strong>
-          GitHub Actions workflow files carried over from the original GitHub repo during migration.
-          Azure DevOps completely ignores this folder. Last commit May 6, 2024.<br><br>
-          <code>hephaestus/</code> — <strong style="color:#3fb950;">Unity project root.</strong>
+          <code>.github/workflows/</code> &mdash; <strong style="color:#f85149;">Legacy / dead code.</strong>
+          GitHub Actions files carried over from migration. Azure DevOps ignores this folder entirely. Last commit May 6, 2024.<br><br>
+          <code>hephaestus/</code> &mdash; <strong style="color:#3fb950;">Unity project root.</strong>
           Contains <code>Assets/</code>, <code>CloudCodeModules/</code>, <code>Packages/</code>,
-          <code>ProjectSettings/</code>, plus <code>.gitattributes</code> (Git LFS rules for MP4s),
+          <code>ProjectSettings/</code>, <code>.gitattributes</code> (Git LFS for MP4s),
           <code>.gitignore</code>, and <code>knaufkey.keystore</code> (Android APK signing key).<br><br>
-          Unity Cloud Build targets <code>hephaestus/</code> as the project subfolder,
-          running Unity <code>2022.3.62f2</code> on Windows 11 22H2.
+          Unity Cloud Build targets <code>hephaestus/</code> running Unity <code>2022.3.62f2</code> on Windows 11 22H2.
         </p>
       </div>
 
@@ -1090,15 +1084,14 @@
         <span class="q-tag blue">BRANCHES</span>
         <p class="q-q">Required branches for the build pipeline</p>
         <p class="q-context">
-          <code>main</code> — active development branch<br>
-          <code>release</code> — KTA production builds (merge <code>main</code> → <code>release</code> before triggering a KTA build)<br>
-          <code>release-vpt</code> — VPT production builds (merge <code>main</code> → <code>release-vpt</code> before triggering a VPT build)
+          <code>main</code> &mdash; active development branch<br>
+          <code>release</code> &mdash; KTA production builds<br>
+          <code>release-vpt</code> &mdash; VPT production builds
         </p>
       </div>
 
     </div>
 
-    <!-- ── ACCESS ── -->
     <div class="q-section">
       <div class="q-section-title">Access Requirements</div>
 
@@ -1106,9 +1099,8 @@
         <span class="q-tag teal">PORTAL ACCESS</span>
         <p class="q-q">Browser access to the Azure DevOps dashboard</p>
         <p class="q-context">
-          Access is via <code>dev@makeway.is</code> — confirmed registered and active as of May 2026.
-          Log in at <code>dev.azure.com</code>. The account is treated as an external user on
-          Rightpoint's Azure DevOps organization.
+          Access via <code>dev@makeway.is</code> &mdash; confirmed registered and active as of May 2026.
+          Log in at <code>dev.azure.com</code>.
         </p>
       </div>
 
@@ -1116,76 +1108,64 @@
         <span class="q-tag teal">UNITY CLOUD CONNECTION</span>
         <p class="q-q">How Unity Cloud Build connects to this repo</p>
         <p class="q-context">
-          <strong>Provider:</strong> Azure<br>
-          <strong>Organization:</strong> Rightpoint<br>
-          <strong>Project:</strong> KNI - VR Training<br>
-          <strong>Repository:</strong> KNI - VR Training/quest-app<br>
-          <strong>PAT:</strong> Verified active (green checkmark) as of May 2026. Managed by Ryan Britt at Knauf.<br><br>
-          Git executable is set to <code>Cygwin</code> on the build server.
+          <strong>Provider:</strong> Azure &nbsp; <strong>Organization:</strong> Rightpoint &nbsp;
+          <strong>Project:</strong> KNI - VR Training &nbsp; <strong>Repository:</strong> quest-app<br><br>
+          PAT verified active (green checkmark) as of May 2026. Managed by Ryan Britt at Knauf.
+          Git executable set to <code>Cygwin</code> on the build server.
         </p>
       </div>
 
       <div class="q-card flag-amber">
-        <span class="q-tag amber">LOCAL REMOTE — PENDING</span>
-        <p class="q-q">Local project currently points to Makeway GitHub — needs to switch to Azure DevOps</p>
+        <span class="q-tag amber">LOCAL REMOTE &mdash; PENDING</span>
+        <p class="q-q">Local project currently points to Makeway GitHub &mdash; needs to switch to Azure DevOps</p>
         <p class="q-context">
-          Confirmed via <code>git remote -v</code> (May 12, 2026): the local Unity project has a single remote:<br><br>
-          <code>origin → https://github.com/makeway-agency/knauf.git</code><br><br>
-          Azure DevOps is not yet configured as a remote. Once Makeway confirms Azure DevOps is the source
-          of truth, two options:<br><br>
-          <strong>Option A — Add as second remote (no reclone needed):</strong><br>
-          <code>git remote add azure https://rightpoint@dev.azure.com/rightpoint/KNI-VR%20Training/_git/quest-app</code><br>
-          Then push with <code>git push azure main</code><br><br>
-          <strong>Option B — Reclone from Azure DevOps (if repos have diverged):</strong><br>
-          Fresh clone via SSH (see SSH guide below). Required only if Azure DevOps has commits
-          not present in the local copy.<br><br>
-          After switching, Makeway GitHub is completely bypassed — no further updates will be pushed there.
+          Confirmed via <code>git remote -v</code> (May 12, 2026):<br><br>
+          <code>origin &rarr; https://github.com/makeway-agency/knauf.git</code><br><br>
+          Azure DevOps not yet configured as a remote. Once Makeway confirms source of truth, two options:<br><br>
+          <strong>Option A &mdash; Add as second remote (no reclone needed):</strong><br>
+          <code>git remote add azure https://rightpoint@dev.azure.com/rightpoint/KNI-VR%20Training/_git/quest-app</code><br><br>
+          <strong>Option B &mdash; Reclone from Azure DevOps (if repos have diverged):</strong><br>
+          Fresh clone via SSH. Required only if Azure DevOps has commits not in local copy.
         </p>
       </div>
 
       <div class="q-card flag-green">
-        <span class="q-tag green">✓ PAYMENT RESOLVED</span>
-        <p class="q-q">Unity Cloud Services payment method — resolved May 2026</p>
+        <span class="q-tag green">&#10003; PAYMENT RESOLVED</span>
+        <p class="q-q">Unity Cloud Services payment method &mdash; resolved May 2026</p>
         <p class="q-context">
           The Knauf Virtual Reality Experiences Unity Cloud account had a payment failure warning
-          that has since been resolved. The build pipeline is unaffected and fully operational.
+          that has since been resolved. Build pipeline fully operational.
         </p>
       </div>
 
     </div>
 
-    <!-- ── SSH CONNECTION ── -->
     <div class="q-section">
       <div class="q-section-title">Connecting Locally via SSH (Windows 11)</div>
 
       <p style="font-size:12px;color:#8b949e;margin:0 0 16px;line-height:1.6;">
-        Azure DevOps only supports <strong>RSA</strong> SSH keys (not ed25519). Follow these steps
-        to clone the repo to your local machine. Requires Git for Windows and Git LFS.
+        Azure DevOps only supports <strong>RSA</strong> SSH keys (not ed25519).
+        Requires Git for Windows and Git LFS.
       </p>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 1 — Install Git &amp; Git LFS</span>
+        <span class="q-tag grey">STEP 1 &mdash; Install Git &amp; Git LFS</span>
         <p class="q-context">
-          Download Git for Windows from <code>git-scm.com/download/win</code> — Git LFS is bundled
-          in this installer. After installing, open PowerShell and run:<br><br>
-          <code>git lfs install</code>
+          Download from <code>git-scm.com/download/win</code> &mdash; Git LFS is bundled.
+          After installing, run: <code>git lfs install</code>
         </p>
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 2 — Generate RSA SSH Key</span>
+        <span class="q-tag grey">STEP 2 &mdash; Generate RSA SSH Key</span>
         <p class="q-context">
-          In PowerShell, run:<br><br>
           <code>ssh-keygen -t rsa -b 4096 -C "dev@makeway.is" -f "$HOME/.ssh/id_rsa"</code><br><br>
-          Press Enter to skip passphrase (or set one for extra security).
-          This creates two files in <code>C:\Users\YourName\.ssh\</code>:<br>
-          <code>id_rsa</code> — private key (never share)<br>
-          <code>id_rsa.pub</code> — public key (this is what you share)
+          Creates <code>id_rsa</code> (private, never share) and <code>id_rsa.pub</code> (public key).
         </p>
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 3 — Start SSH Agent &amp; Add Key</span>
+        <span class="q-tag grey">STEP 3 &mdash; Start SSH Agent &amp; Add Key</span>
         <p class="q-context">
           <code>Get-Service ssh-agent | Start-Service</code><br>
           <code>ssh-add "$HOME/.ssh/id_rsa"</code>
@@ -1193,30 +1173,27 @@
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 4 — Copy Public Key</span>
+        <span class="q-tag grey">STEP 4 &mdash; Copy Public Key</span>
         <p class="q-context">
           <code>cat "$HOME/.ssh/id_rsa.pub"</code><br><br>
-          Copy the entire output (starts with <code>ssh-rsa</code>). Do not include any extra spaces or line breaks.
+          Copy entire output (starts with <code>ssh-rsa</code>).
         </p>
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 5 — Add Key to Azure DevOps</span>
+        <span class="q-tag grey">STEP 5 &mdash; Add Key to Azure DevOps</span>
         <p class="q-context">
           1. Go to <code>dev.azure.com</code> and log in<br>
-          2. Click your profile icon → <strong>SSH public keys</strong><br>
-          3. Click <strong>+ New Key</strong><br>
-          4. Give it a name (e.g. "Makeway Dev Windows")<br>
-          5. Paste your public key and click <strong>Save</strong>
+          2. Profile icon &rarr; <strong>SSH public keys</strong><br>
+          3. Click <strong>+ New Key</strong>, name it "Makeway Dev Windows"<br>
+          4. Paste public key and click <strong>Save</strong>
         </p>
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 6 — Get SSH Clone URL &amp; Clone</span>
+        <span class="q-tag grey">STEP 6 &mdash; Clone the Repo</span>
         <p class="q-context">
-          1. Go to the <code>quest-app</code> repo in Azure DevOps<br>
-          2. Click <strong>Clone</strong> → switch to the <strong>SSH</strong> tab → copy the SSH URL<br><br>
-          Then in PowerShell:<br>
+          In the <code>quest-app</code> repo, click <strong>Clone</strong> &rarr; SSH tab &rarr; copy URL.<br><br>
           <code>git clone &lt;SSH URL&gt;</code><br>
           <code>cd quest-app</code><br>
           <code>git lfs fetch origin --all</code>
@@ -1224,7 +1201,7 @@
       </div>
 
       <div class="q-card flag-grey">
-        <span class="q-tag grey">STEP 7 — Verify Connection</span>
+        <span class="q-tag grey">STEP 7 &mdash; Verify Connection</span>
         <p class="q-context">
           <code>ssh -T git@ssh.dev.azure.com</code><br><br>
           A successful response confirms the SSH connection is working.
@@ -1233,7 +1210,6 @@
 
     </div>
 
-    <!-- ── BUILD PIPELINE ── -->
     <div class="q-section">
       <div class="q-section-title">Build &amp; Deploy Pipeline</div>
 
@@ -1241,15 +1217,15 @@
         <span class="q-tag blue">FULL PIPELINE</span>
         <p class="q-q">End-to-end flow from code change to headset</p>
         <p class="q-context">
-          1. Make code changes locally → push to <code>quest-app</code> repo on Azure DevOps<br>
-          2. Merge <code>main</code> → <code>release</code> (KTA) or <code>release-vpt</code> (VPT)<br>
-          3. Trigger a Clean Build in Unity Cloud Build Automation<br>
-          4. Wait ~2 hours (KTA) or ~2.5 hours (VPT) for build to complete<br>
-          5. Download the <code>.apk</code> from Unity Cloud (three-dot menu → Download .APK)<br>
-          6. Open Meta Quest Developer Hub → App Distribution tab<br>
-          7. Select the appropriate app → Upload to <strong>Business channel</strong><br>
-          8. Wait ~20 minutes for Meta servers to process<br>
-          9. Build automatically distributes to all enrolled headsets in the relevant device group
+          1. Make code changes locally &rarr; push to Azure DevOps<br>
+          2. Merge <code>main</code> &rarr; <code>release</code> (KTA) or <code>release-vpt</code> (VPT)<br>
+          3. Trigger Clean Build in Unity Cloud Build Automation<br>
+          4. Wait ~2 hrs (KTA) or ~2.5 hrs (VPT)<br>
+          5. Download <code>.apk</code> from Unity Cloud<br>
+          6. Open Meta Quest Developer Hub &rarr; App Distribution<br>
+          7. Upload to <strong>Business channel</strong><br>
+          8. Wait ~20 min for Meta to process<br>
+          9. Build distributes to all enrolled headsets automatically
         </p>
       </div>
 
@@ -1257,18 +1233,11 @@
         <span class="q-tag blue">BUILD CONFIGURATIONS</span>
         <p class="q-q">Available build targets in Unity Cloud</p>
         <p class="q-context">
-          <strong>KTA:</strong><br>
-          <code>KTA - Staging</code> — internal QA<br>
-          <code>KTA - Development</code> — active development builds<br>
-          <code>KTA - Primary Review</code> — Alpha/Beta client preview<br>
-          <code>KTA - Secondary Review</code> — wider Knauf stakeholder preview<br>
-          <code>KTA - Production</code> — live release to 130+ headsets<br><br>
-          <strong>VPT:</strong><br>
-          <code>VPT - Staging</code> — internal QA<br>
-          <code>VPT - Development</code> — active development builds<br>
-          <code>VPT - Primary Review</code> — client preview<br>
-          <code>VPT - Secondary Review</code> — wider review<br>
-          <code>VPT - Production</code> — live release (currently: Mickey Chastain, Scott Stillabower, Ryan Britt)
+          <strong>KTA:</strong> Staging &nbsp;&middot;&nbsp; Development &nbsp;&middot;&nbsp;
+          Primary Review &nbsp;&middot;&nbsp; Secondary Review &nbsp;&middot;&nbsp; Production (130+ headsets)<br><br>
+          <strong>VPT:</strong> Staging &nbsp;&middot;&nbsp; Development &nbsp;&middot;&nbsp;
+          Primary Review &nbsp;&middot;&nbsp; Secondary Review &nbsp;&middot;&nbsp;
+          Production (Mickey Chastain, Scott Stillabower, Ryan Britt)
         </p>
       </div>
 
@@ -1502,4 +1471,192 @@ var D = {
     group:"vpt", groupLabel:"VPT",
     build:null, addr:"VPT Scenes (Predownload)",
     plain:"The fiberizing room (also called fiberisation). Here the molten glass from the furnace is spun at high speed — like candy floss — to form incredibly thin glass fibres. These fibres are the core material of Knauf's glass wool insulation products. The binder from the Binder Room is sprayed on at this stage to stick the fibres together.",
-    tech:"Fiberization_RoomExplore Variant references CuringAndCooling (forwar
+    tech:"Fiberization_RoomExplore Variant references CuringAndCooling (forward) and Furnace (back) portals. CuringAndCoolingPortal Variant → 06_CuringAndCooling.",
+    scripts:[
+      {name:"Fiberization_RoomExplore Variant (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Fiberzing/Fiberization_RoomExplore Variant.prefab", what:"References CuringAndCooling (forward) + Furnace (back) portals"},
+      {name:"CuringAndCoolingPortal Variant",            path:"Assets/_Project/Prefabs/Portals/VPT/CuringAndCoolingPortal Variant.prefab", what:"Physical XR portal → 06_CuringAndCooling"}
+    ],
+    in:[
+      {from:"04_Furnace",          kind:"portal", label:"FurnaceRoomExplore (forward)", via:"FurnaceRoomExplore.prefab + FiberizingRoomPortal Variant.prefab"},
+      {from:"06_CuringAndCooling", kind:"portal", label:"CuringAndCoolingStateMachine (back nav)", via:"CuringAndCoolingStateMachine.prefab references Fiberization portal"},
+      {from:"_VPT",               kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Fiberizing Variant.prefab"}
+    ],
+    out:[
+      {to:"06_CuringAndCooling", kind:"portal", label:"Fiberization_RoomExplore (forward)", via:"Fiberization_RoomExplore Variant.prefab + CuringAndCoolingPortal Variant.prefab"},
+      {to:"04_Furnace",          kind:"portal", label:"Fiberization_RoomExplore (back)",    via:"Fiberization_RoomExplore Variant.prefab references Furnace portal"}
+    ]
+  },
+  "06_CuringAndCooling": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The curing and cooling room. After the glass fibres are formed, the binder that holds them together needs to be 'cured' — baked in a long oven so it sets hard and gives the insulation its permanent shape. Once baked, the product passes through a cooling section before it can be handled and cut. This is where raw fibres become recognisable insulation slabs.",
+    tech:"CuringAndCoolingStateMachine references Cutting (forward) and Fiberization (back) portals. CuttingRoomPortal Variant → 07_Cutting.",
+    scripts:[
+      {name:"CuringAndCoolingStateMachine (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/CuringAndCooling/CuringAndCoolingStateMachine.prefab", what:"References Cutting (forward) + Fiberization (back) portals"},
+      {name:"CuttingRoomPortal Variant",             path:"Assets/_Project/Prefabs/Portals/VPT/CuttingRoomPortal Variant.prefab", what:"Physical XR portal → 07_Cutting"}
+    ],
+    in:[
+      {from:"05_Fiberizing", kind:"portal", label:"Fiberization_RoomExplore (forward)", via:"Fiberization_RoomExplore Variant.prefab + CuringAndCoolingPortal Variant.prefab"},
+      {from:"07_Cutting",    kind:"portal", label:"CuttingStateMachine (back nav)", via:"CuttingStateMachine.prefab references CuringAndCooling portal"},
+      {from:"_VPT",         kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Curing and Cooling Variant.prefab"}
+    ],
+    out:[
+      {to:"07_Cutting",    kind:"portal", label:"CuringAndCoolingStateMachine (forward)", via:"CuringAndCoolingStateMachine.prefab + CuttingRoomPortal Variant.prefab"},
+      {to:"05_Fiberizing", kind:"portal", label:"CuringAndCoolingStateMachine (back)",    via:"CuringAndCoolingStateMachine.prefab references Fiberization portal"}
+    ]
+  },
+  "07_Cutting": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The cutting room. The large continuous 'blanket' of cured insulation coming out of the oven is cut to the standard product sizes here — widths, lengths, and thicknesses that match common building dimensions. Saws and slitters trim the product into the rolls and slabs you'd find at a builders' merchant.",
+    tech:"Both CuttingStateMachine and CuttingExploringPhase reference Packaging (forward) and CuringAndCooling (back) portals. PackagingRoomPortal Variant → 08_Packaging.",
+    scripts:[
+      {name:"CuttingStateMachine (prefab)",   path:"Assets/_Project/Prefabs/State Machines/VPT/Cutting/CuttingStateMachine.prefab", what:"References Packaging (forward) + CuringAndCooling (back) portals"},
+      {name:"CuttingExploringPhase (prefab)", path:"Assets/_Project/Prefabs/State Machines/VPT/Cutting/CuttingExploringPhase.prefab", what:"Phase also references Packaging portal"},
+      {name:"PackagingRoomPortal Variant",    path:"Assets/_Project/Prefabs/Portals/VPT/PackagingRoomPortal Variant.prefab", what:"Physical XR portal → 08_Packaging"}
+    ],
+    in:[
+      {from:"06_CuringAndCooling", kind:"portal", label:"CuringAndCoolingStateMachine (forward)", via:"CuringAndCoolingStateMachine.prefab + CuttingRoomPortal Variant.prefab"},
+      {from:"08_Packaging",        kind:"portal", label:"PackagingExploringPhase (back nav)", via:"PackagingExploringPhase.prefab references Cutting portal"},
+      {from:"_VPT",               kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Cutting Variant.prefab"}
+    ],
+    out:[
+      {to:"08_Packaging",        kind:"portal", label:"CuttingStateMachine / CuttingExploringPhase (forward)", via:"CuttingStateMachine.prefab + CuttingExploringPhase.prefab + PackagingRoomPortal Variant.prefab"},
+      {to:"06_CuringAndCooling", kind:"portal", label:"CuttingStateMachine (back)", via:"CuttingStateMachine.prefab references CuringAndCooling portal"}
+    ]
+  },
+  "08_Packaging": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The packaging room. Cut insulation products are wrapped in plastic film, labelled, and stacked onto pallets ready for dispatch. You'll see the finished Knauf-branded products in their familiar packaging here — the last step before they leave the factory.",
+    tech:"PackagingExploringPhase references WarehouseAndDistribution (forward) and Cutting (back) portals. WarehouseDistributionPortal Variant → 09_WarehouseAndDistribution.",
+    scripts:[
+      {name:"PackagingExploringPhase (prefab)",    path:"Assets/_Project/Prefabs/State Machines/VPT/Packaging/PackagingExploringPhase.prefab", what:"References WarehouseAndDistribution (forward) + Cutting (back) portals"},
+      {name:"WarehouseDistributionPortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/WarehouseDistributionPortal Variant.prefab", what:"Physical XR portal → 09_WarehouseAndDistribution"}
+    ],
+    in:[
+      {from:"07_Cutting", kind:"portal", label:"CuttingStateMachine / CuttingExploringPhase (forward)", via:"CuttingStateMachine.prefab + PackagingRoomPortal Variant.prefab"},
+      {from:"_VPT",      kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Packaging Variant.prefab"}
+    ],
+    out:[
+      {to:"09_WarehouseAndDistribution", kind:"portal", label:"PackagingExploringPhase (forward)", via:"PackagingExploringPhase.prefab + WarehouseDistributionPortal Variant.prefab"},
+      {to:"07_Cutting",                  kind:"portal", label:"PackagingExploringPhase (back)",    via:"PackagingExploringPhase.prefab references Cutting portal"}
+    ]
+  },
+  "09_WarehouseAndDistribution": {
+    group:"vpt", groupLabel:"VPT",
+    build:null, addr:"VPT Scenes (Predownload)",
+    plain:"The warehouse and distribution centre — the final stop on the tour. Pallets of finished insulation products are stored here and loaded onto lorries for delivery to builders' merchants and construction sites across the country. This is the end of the manufacturing journey.",
+    tech:"Final room in the linear tour route. No forward portal — end of the chain. Still reachable directly from the Facility Map menu on _VPT.",
+    scripts:[
+      {name:"PackagingExploringPhase (prefab)",    path:"Assets/_Project/Prefabs/State Machines/VPT/Packaging/PackagingExploringPhase.prefab", what:"References this scene's portal as its forward destination"},
+      {name:"WarehouseDistributionPortal Variant", path:"Assets/_Project/Prefabs/Portals/VPT/WarehouseDistributionPortal Variant.prefab", what:"Physical XR portal arriving from 08_Packaging"}
+    ],
+    in:[
+      {from:"08_Packaging", kind:"portal", label:"PackagingExploringPhase (forward)", via:"PackagingExploringPhase.prefab + WarehouseDistributionPortal Variant.prefab"},
+      {from:"_VPT",        kind:"ui",     label:"Facility Map menu", via:"Map Toggle - Warehouse Variant.prefab"}
+    ],
+    out:[]
+  }
+};
+
+// ── helpers ────────────────────────────────────────────────────────────────────
+function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+var KPILL = {boot:"warn", state:"ok", ui:"kta", portal:"vpt"};
+var KLABEL= {boot:"boot", state:"state machine", ui:"UI", portal:"XR portal"};
+
+var panel   = document.getElementById("panel");
+var phTitle = document.getElementById("ph-title");
+var phSub   = document.getElementById("ph-sub");
+var pb      = document.getElementById("pb");
+var active  = null;
+
+function pill(cls,txt){ return '<span class="pill '+cls+'">'+esc(txt)+'</span>'; }
+
+function renderScene(id){
+  var s = D[id]; if(!s) return;
+  phTitle.textContent = id;
+  phSub.textContent   = s.groupLabel;
+
+  var status = '';
+  if(s.build !== null) status += pill('ok','Build index '+s.build)+' ';
+  else                 status += pill('','Not in build')+' ';
+  if(s.addr)           status += pill('vpt', s.addr)+' ';
+  else if(s.addrWarn)  status += pill('warn','⚠ Not Addressable')+' ';
+  status += pill(s.group, s.groupLabel);
+
+  var scripts = s.scripts.map(function(sc){
+    return '<div class="script-item">'
+      +'<div class="si-name">'+esc(sc.name)+'</div>'
+      +'<div class="si-what">'+esc(sc.what)+'</div>'
+      +'<div class="si-path">'+esc(sc.path)+'</div>'
+      +'</div>';
+  }).join('');
+
+  function transHtml(list, dir){
+    if(!list.length) return '<p style="color:#5a647a;font-size:12px;margin:4px 0">None</p>';
+    return list.map(function(t){
+      return '<div class="trans-item">'
+        +'<div class="ti-row">'+pill(KPILL[t.kind],KLABEL[t.kind])
+        +'<span class="ti-name">'+(dir==='in'?'← '+esc(t.from):'→ '+esc(t.to))+'</span></div>'
+        +'<div class="ti-label">'+esc(t.label)+'</div>'
+        +'<div class="ti-via">'+esc(t.via)+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  pb.innerHTML =
+    '<h3>Status</h3><div>'+status+'</div>'
+   +'<h3>What is this?</h3><p class="plain">'+esc(s.plain)+'</p>'
+   +'<h3>Technical notes</h3><p class="tech">'+esc(s.tech)+'</p>'
+   +'<h3>Scripts &amp; prefabs ('+s.scripts.length+')</h3>'+scripts
+   +'<h3>Transitions in ('+s.in.length+')</h3>'+transHtml(s.in,'in')
+   +'<h3>Transitions out ('+s.out.length+')</h3>'+transHtml(s.out,'out');
+}
+
+var page = document.getElementById('page');
+
+function openPanel(id, el){
+  if(active) active.classList.remove('active');
+  active = el; el.classList.add('active');
+  renderScene(id);
+  panel.classList.add('open');
+  page.classList.add('panel-open');
+}
+function closePanel(){
+  panel.classList.remove('open');
+  page.classList.remove('panel-open');
+  if(active){ active.classList.remove('active'); active=null; }
+  pb.innerHTML = '<p class="placeholder">Click any coloured scene box to see what it is, what it does, and how it connects to other scenes.</p>';
+  phTitle.textContent='Inspector'; phSub.textContent='Select a scene';
+}
+
+document.getElementById('ph-close').addEventListener('click', closePanel);
+
+document.querySelectorAll('.scene-node').forEach(function(el){
+  var id = el.getAttribute('data-scene');
+  if(!D[id]) return;
+  el.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(active===el && panel.classList.contains('open')){ closePanel(); }
+    else { openPanel(id, el); }
+  });
+});
+
+document.getElementById('page').addEventListener('click', function(e){
+  if(panel.classList.contains('open') && !e.target.closest('.scene-node')){
+    closePanel();
+  }
+});
+
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id !== 'scene'){ closePanel(); }
+}
+</script>
+<div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#4a5168;letter-spacing:.4px;">by Samar Shool</div>
+</body>
+</html>
