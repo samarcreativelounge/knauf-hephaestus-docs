@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Azure · Unity · Meta Pipeline</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #0e1116;
+    color: #cdd9e5;
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 17px;
+    min-height: 100vh;
+    padding: 32px 24px 64px;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #cdd9e5;
+    letter-spacing: .5px;
+    margin-bottom: 32px;
+  }
+
+  /* ── LANES ─────────────────────────────── */
+  .lanes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto 48px;
+  }
+
+  .lane {
+    background: #131922;
+    border: 1px solid #2a3142;
+    border-radius: 10px;
+    padding: 20px 18px;
+  }
+
+  .lane-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #4a5168;
+    text-align: center;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+
+  /* ── CARDS ─────────────────────────────── */
+  .card {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .card:last-child { margin-bottom: 0; }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 7px;
+  }
+  .card-line {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.6;
+  }
+  .card-line.accent { color: #4c8bf5; }
+  .card-line.green  { color: #57ab5a; }
+  .card-line.purple { color: #ce6cf0; }
+  .card-line.amber  { color: #f59f4c; }
+  .card-line.red    { color: #f85149; }
+  .card-line.dim    { color: #4a5168; font-style: italic; }
+  .card-line.code   { color: #cdd9e5; font-family: monospace; font-size: 13px; background: #0d1117; padding: 2px 7px; border-radius: 3px; display: inline-block; margin-top: 1px; }
+
+  .card-tool {
+    display: inline-block;
+    font-size: 11px;
+    color: #4a5168;
+    border: 1px solid #2a3142;
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-top: 7px;
+  }
+
+  /* card colour variants */
+  .card-blue   { background: #1a2030; border: 1.5px solid #4c8bf5; }
+  .card-blue .card-title { color: #cbe0ff; }
+
+  .card-teal   { background: #1a2230; border: 1.5px solid #26c6da; }
+  .card-teal-dashed { background: #1a2230; border: 1px dashed #26c6da; }
+  .card-teal .card-title, .card-teal-dashed .card-title { color: #a0f0ff; }
+
+  .card-purple { background: #1e1a2a; border: 2px solid #ce6cf0; }
+  .card-purple .card-title { color: #e0b8ff; }
+
+  .card-grey   { background: #1c1c22; border: 1px solid #4a5168; }
+  .card-grey .card-title { color: #8b949e; }
+
+  .card-green  { background: #1a2a1a; border: 1.5px solid #3fb950; }
+  .card-green .card-title { color: #3fb950; }
+
+  .card-amber  { background: #221a18; border: 2px solid #f59f4c; }
+  .card-amber .card-title { color: #ffd2a0; }
+
+  .card-red    { background: #1e1818; border: 2px solid #f85149; }
+  .card-red .card-title   { color: #ffa09a; }
+
+  .card-dark   { background: #141a28; border: 1px solid #2a3142; }
+  .card-dark .card-title  { color: #8b949e; }
+
+  .card-dashed { background: #1a1e20; border: 1px dashed #4a5168; }
+  .card-dashed .card-title { color: #8b949e; }
+
+  /* connector arrows between cards */
+  .arrow {
+    text-align: center;
+    font-size: 20px;
+    color: #2a3142;
+    margin: -2px 0 2px;
+    line-height: 1;
+  }
+  .arrow.blue   { color: #4c8bf5; }
+  .arrow.teal   { color: #26c6da; }
+  .arrow.purple { color: #ce6cf0; }
+  .arrow.amber  { color: #f59f4c; }
+  .arrow.red    { color: #f85149; }
+
+  /* ── FLOW BRIDGE ───────────────────────── */
+  .flow-bridge {
+    max-width: 1400px;
+    margin: 0 auto 16px;
+    background: #0d1117;
+    border: 1px solid #2a3142;
+    border-radius: 10px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+  .fb-node {
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .fb-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #cdd9e5;
+    margin-bottom: 3px;
+  }
+  .fb-sub {
+    font-size: 11px;
+    color: #4a5168;
+  }
+  .fb-arrow {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+    min-width: 80px;
+  }
+  .fb-arrow-line {
+    width: 100%;
+    height: 2px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fb-arrow-line::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 12px;
+    height: 2px;
+  }
+  .fb-arrow-line::after {
+    content: '▶';
+    position: absolute;
+    right: 0;
+    font-size: 11px;
+    line-height: 1;
+  }
+  .fb-arrow-line.blue::before  { background: #4c8bf5; }
+  .fb-arrow-line.blue::after   { color: #4c8bf5; }
+  .fb-arrow-line.purple::before { background: #ce6cf0; }
+  .fb-arrow-line.purple::after  { color: #ce6cf0; }
+  .fb-arrow-line.amber::before  { background: #f59f4c; }
+  .fb-arrow-line.amber::after   { color: #f59f4c; }
+  .fb-arrow-tag {
+    font-size: 11px;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .fb-arrow-tag.blue   { color: #4c8bf5; }
+  .fb-arrow-tag.purple { color: #ce6cf0; }
+  .fb-arrow-tag.amber  { color: #f59f4c; }
+  .fb-node-box {
+    border-radius: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid;
+  }
+  .fb-node-box.blue   { border-color: #4c8bf5; background: #1a2030; }
+  .fb-node-box.purple { border-color: #ce6cf0; background: #1e1a2a; }
+  .fb-node-box.amber  { border-color: #f59f4c; background: #221a18; }
+  .fb-node-box.red    { border-color: #f85149; background: #1e1818; }
+
+  /* divider between lanes and steps */
+  .section-divider {
+    max-width: 1400px;
+    margin: 0 auto 28px;
+    border: none;
+    border-top: 1px solid #2a3142;
+  }
+  .section-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #cdd9e5;
+    letter-spacing: .5px;
+    margin-bottom: 22px;
+  }
+
+  /* ── STEPS ─────────────────────────────── */
+  .steps {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    background: #161b22;
+    border: 1.5px solid #3a4a6a;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .step.green  { border-color: #3fb950; }
+  .step.blue   { border-color: #4c8bf5; }
+  .step.purple { border-color: #ce6cf0; }
+  .step.amber  { border-color: #f59f4c; }
+  .step.red    { border-color: #f85149; }
+
+  .step-num {
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 30px;
+    padding-top: 1px;
+  }
+  .step.green  .step-num { color: #3fb950; }
+  .step.blue   .step-num { color: #4c8bf5; }
+  .step.purple .step-num { color: #ce6cf0; }
+  .step.amber  .step-num { color: #f59f4c; }
+  .step.red    .step-num { color: #ffa09a; }
+  .step        .step-num { color: #cdd9e5; }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .step.green  .step-title { color: #3fb950; }
+  .step.blue   .step-title { color: #4c8bf5; }
+  .step.purple .step-title { color: #ce6cf0; }
+  .step.amber  .step-title { color: #f59f4c; }
+  .step.red    .step-title { color: #ffa09a; }
+  .step        .step-title { color: #cdd9e5; }
+
+  .step-body {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.7;
+  }
+  .step-body .code { color: #cdd9e5; font-family: monospace; background: #0d1117; padding: 2px 7px; border-radius: 3px; }
+  .step-body .dim  { color: #4a5168; font-style: italic; }
+  .step-tool {
+    font-size: 11px;
+    color: #4a5168;
+    border: 1px solid #2a3142;
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-left: 8px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">Knauf VR — Full Pipeline: Code → Build → Distribution</p>
+
+<!-- ═══════════════════════════════════════
+     LANES
+═══════════════════════════════════════ -->
+<div class="lanes">
+
+  <!-- Full-width flow header: shows lateral connections between lanes -->
+  <div style="grid-column:1 / -1; background:#0d1117; border:1px solid #2a3142; border-radius:8px; padding:14px 20px; display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:4px; flex-wrap:nowrap;">
+
+    <div style="text-align:center; flex-shrink:0;">
+      <div style="font-size:13px; font-weight:700; color:#cbe0ff; letter-spacing:.5px;">CODE</div>
+      <div style="font-size:11px; color:#4a5168;">your changes</div>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:0 12px; min-width:100px;">
+      <div style="font-size:11px; color:#4c8bf5; font-weight:600; margin-bottom:4px;">PAT (secure token)</div>
+      <div style="width:100%; height:2px; background:linear-gradient(to right, #4c8bf5, #4c8bf5 90%, transparent); position:relative;">
+        <span style="position:absolute; right:-6px; top:-7px; color:#4c8bf5; font-size:13px;">▶</span>
+      </div>
+      <div style="font-size:10px; color:#4a5168; margin-top:4px;">Azure DevOps → Unity reads code</div>
+    </div>
+
+    <div style="text-align:center; flex-shrink:0;">
+      <div style="font-size:13px; font-weight:700; color:#e0b8ff; letter-spacing:.5px;">BUILD</div>
+      <div style="font-size:11px; color:#4a5168;">compiles app (~2 hrs)</div>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:0 12px; min-width:100px;">
+      <div style="font-size:11px; color:#ce6cf0; font-weight:600; margin-bottom:4px;">download .apk</div>
+      <div style="width:100%; height:2px; background:linear-gradient(to right, #ce6cf0, #ce6cf0 90%, transparent); position:relative;">
+        <span style="position:absolute; right:-6px; top:-7px; color:#ce6cf0; font-size:13px;">▶</span>
+      </div>
+      <div style="font-size:10px; color:#4a5168; margin-top:4px;">you upload to Meta manually</div>
+    </div>
+
+    <div style="text-align:center; flex-shrink:0;">
+      <div style="font-size:13px; font-weight:700; color:#ffd2a0; letter-spacing:.5px;">DISTRIBUTION</div>
+      <div style="font-size:11px; color:#4a5168;">pushed to 130+ headsets</div>
+    </div>
+
+  </div>
+
+  <!-- ── CODE ── -->
+  <div class="lane">
+    <div class="lane-label">Code</div>
+
+    <!-- ROW 1: Local Machine + Makeway GitHub side by side — Makeway is a branch, not main flow -->
+    <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:stretch; margin-bottom:4px;">
+
+      <!-- Local Machine -->
+      <div class="card card-blue" style="margin-bottom:0;">
+        <div class="card-title">Local Machine</div>
+        <div class="card-line">Unity Editor — hephaestus/</div>
+        <div class="card-line dim">D:\GitHub\knauf</div>
+        <span class="card-tool">Unity Editor</span>
+        <span class="card-tool">GitHub Desktop</span>
+        <span class="card-tool">PowerShell</span>
+      </div>
+
+      <!-- → arrow between them -->
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:0 2px;">
+        <span style="font-size:10px; color:#3fb950; white-space:nowrap;">GitHub Desktop</span>
+        <span style="font-size:24px; color:#3fb950; line-height:1;">→</span>
+        <span style="font-size:10px; color:#3fb950; font-style:italic; white-space:nowrap;">push origin</span>
+      </div>
+
+      <!-- Makeway GitHub — branch ends here -->
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <div class="card card-green" style="margin-bottom:0; opacity:0.75; flex:1;">
+          <div class="card-title">Makeway GitHub</div>
+          <div class="card-line">makeway-agency/knauf</div>
+          <div class="card-line green">Early dev · backup only</div>
+          <div class="card-line dim">⊘ not in client pipeline</div>
+        </div>
+        <div style="text-align:center; font-size:11px; color:#4a5168; font-style:italic; padding:2px 0;">⊘ branch ends here</div>
+      </div>
+
+    </div>
+
+    <!-- Divider: separates the branch row from the main Azure flow below -->
+    <div style="border-top:1px dashed #2a3142; margin:10px 0 10px;"></div>
+
+    <!-- Main flow continues: LOCAL MACHINE → AZURE (full width, no Makeway GitHub) -->
+    <div style="margin-bottom:6px;">
+      <span style="font-size:20px; color:#4c8bf5;">↓</span>
+      <span style="font-size:12px; color:#4c8bf5; margin-left:8px; vertical-align:middle;">Windows PowerShell · git push azure main (SSH)</span>
+    </div>
+
+    <!-- Azure DevOps: full width -->
+    <div class="card card-blue">
+      <div class="card-title">Azure DevOps</div>
+      <div class="card-line">rightpoint / KNI-VR Training</div>
+      <div class="card-line dim">repo: quest-app</div>
+      <div class="card-line dim">branches: main · release · release-vpt</div>
+      <div class="card-line accent">access: dev@makeway.is ✓</div>
+      <div class="card-line purple" style="margin-top:6px;">→ triggers Unity Cloud Build via PAT (see BUILD lane)</div>
+    </div>
+
+    <div class="arrow blue">↓</div>
+
+    <!-- Before triggering build: full width -->
+    <div class="card card-dark">
+      <div class="card-title">Before triggering build</div>
+      <div class="card-line accent">merge main → release (KTA)</div>
+      <div class="card-line accent">merge main → release-vpt (VPT)</div>
+      <span class="card-tool">Windows PowerShell</span>
+    </div>
+  </div>
+
+  <!-- ── BUILD ── -->
+  <div class="lane">
+    <div class="lane-label">Build</div>
+
+    <div class="card card-teal">
+      <div class="card-title">Unity CCD</div>
+      <div class="card-line">Cloud Content Delivery</div>
+      <div class="card-line" style="color:#26c6da;">VPT scene bundles — no APK rebuild</div>
+      <div class="card-line dim">content updates only (videos, assets)</div>
+    </div>
+
+    <div class="card card-teal-dashed" style="margin-top:8px;">
+      <div class="card-title">Unity Auth + Cloud Code</div>
+      <div class="card-line">Silent anonymous sign-in on launch</div>
+      <div class="card-line">VPT access code gate (CheckAccessCode)</div>
+      <div class="card-line dim">no login screen shown to user</div>
+    </div>
+
+    <div class="arrow purple" style="margin-top:auto; padding-top:8px;">↓ PAT</div>
+
+    <div class="card card-purple" style="margin-top:6px;">
+      <div class="card-title">Unity Cloud Build</div>
+      <div class="card-line">Build Automation (cloud server)</div>
+      <div class="card-line">Reads code from Azure DevOps via PAT</div>
+      <div class="card-line dim">KTA ~2 hrs · VPT ~2.5 hrs</div>
+      <div class="card-line purple">PAT managed by Ryan Britt (Knauf)</div>
+      <div class="card-line green">access: dev@makeway.is ✓</div>
+      <span class="card-tool">Unity Cloud Dashboard (browser)</span>
+    </div>
+
+    <div class="arrow purple">↓</div>
+
+    <div class="card card-grey">
+      <div class="card-title">Build Configurations</div>
+      <div class="card-line">KTA: Staging · Dev · Primary Review</div>
+      <div class="card-line">KTA: Secondary Review · Production</div>
+      <div class="card-line">VPT: Staging · Dev · Primary · Secondary</div>
+      <div class="card-line amber">VPT Production → 130+ headsets</div>
+    </div>
+  </div>
+
+  <!-- ── DISTRIBUTION ── -->
+  <div class="lane">
+    <div class="lane-label">Distribution</div>
+
+    <div class="card card-dashed">
+      <div class="card-title">Mixpanel Analytics</div>
+      <div class="card-line">Tracks: Environment, Level, Module events</div>
+      <div class="card-line dim">Anonymous · aggregate data only</div>
+    </div>
+
+    <div class="arrow amber" style="padding-top:8px;">↓ .apk</div>
+
+    <div class="card card-amber" style="margin-top:6px;">
+      <div class="card-title">Meta Quest Developer Hub</div>
+      <div class="card-line">App Distribution tab → Business channel</div>
+      <div class="card-line">Upload .apk → Meta processes (~20 min)</div>
+      <div class="card-line amber">requires: Oculus Developer org access</div>
+      <div class="card-line amber">same account as Quest headset</div>
+      <span class="card-tool">Meta Quest Developer Hub (desktop app)</span>
+    </div>
+
+    <div class="arrow amber">↓</div>
+
+    <div class="card card-red">
+      <div class="card-title">Meta For Work</div>
+      <div class="card-line">Quest for Business · Device Manager</div>
+      <div class="card-line">Knauf's managed org — all headsets enrolled</div>
+      <div class="card-line green">access: samshool1978@gmail.com</div>
+      <div class="card-line dim">KTA group · VPT group</div>
+    </div>
+
+    <div class="arrow red">↓</div>
+
+    <div class="card card-grey">
+      <div class="card-title">130+ Meta Quest Headsets</div>
+      <div class="card-line">Update received on next app launch</div>
+      <div class="card-line dim">KTA showroom · VPT training</div>
+    </div>
+  </div>
+
+</div><!-- /lanes -->
+
+<!-- ═══════════════════════════════════════
+     STEP-BY-STEP
+═══════════════════════════════════════ -->
+
+<hr class="section-divider">
+<p class="section-title">Step-by-Step: Making a Change End-to-End</p>
+
+<div class="steps">
+
+  <div class="step blue">
+    <div class="step-num">1</div>
+    <div>
+      <div class="step-title">Make the change <span class="step-tool">Unity Editor</span></div>
+      <div class="step-body">Open Unity Editor on your local machine and edit the project in <span class="code">D:\GitHub\knauf\hephaestus</span>. Save with <span class="code">Ctrl+S</span> when done.</div>
+    </div>
+  </div>
+
+  <div class="step blue">
+    <div class="step-num">2</div>
+    <div>
+      <div class="step-title">Commit in GitHub Desktop <span class="step-tool">GitHub Desktop</span></div>
+      <div class="step-body">Open GitHub Desktop — your changed files appear in the left panel. Write a commit message and click <span class="code">Commit to main</span>.</div>
+    </div>
+  </div>
+
+  <div class="step green">
+    <div class="step-num">3</div>
+    <div>
+      <div class="step-title">Push to Makeway GitHub <span class="step-tool">GitHub Desktop</span></div>
+      <div class="step-body">Click <span class="code">Push origin</span> in GitHub Desktop. Backs up your work on Makeway's internal repo. <span class="dim">Not part of the client pipeline.</span></div>
+    </div>
+  </div>
+
+  <div class="step blue">
+    <div class="step-num">4</div>
+    <div>
+      <div class="step-title">Push to Azure DevOps <span class="step-tool">Windows PowerShell</span></div>
+      <div class="step-body">Open PowerShell and run: <span class="code">git push azure main</span>. Verify the commit appears in the Azure DevOps browser.</div>
+    </div>
+  </div>
+
+  <div class="step blue">
+    <div class="step-num">5</div>
+    <div>
+      <div class="step-title">Merge to release branch <span class="step-tool">Windows PowerShell</span></div>
+      <div class="step-body">
+        <span class="code">git checkout release</span> &nbsp;
+        <span class="code">git merge main</span> &nbsp;
+        <span class="code">git push azure release</span><br>
+        Repeat on <span class="code">release-vpt</span> for VPT builds.
+      </div>
+    </div>
+  </div>
+
+  <div class="step purple">
+    <div class="step-num">6</div>
+    <div>
+      <div class="step-title">Trigger Unity Cloud Build <span class="step-tool">Unity Cloud Dashboard (browser)</span></div>
+      <div class="step-body">Go to Unity Cloud dashboard in your browser. Select the correct build config (e.g. <span class="code">KTA-Production</span>). Click <span class="code">Build → Clean Build</span>.</div>
+    </div>
+  </div>
+
+  <div class="step purple">
+    <div class="step-num">7</div>
+    <div>
+      <div class="step-title">Wait for build to complete <span class="step-tool">Unity Cloud Dashboard (browser)</span></div>
+      <div class="step-body">KTA build: ~2 hours &nbsp;·&nbsp; VPT build: ~2.5 hours. Monitor progress in the Unity Cloud dashboard. Build runs on Unity's cloud servers.</div>
+    </div>
+  </div>
+
+  <div class="step purple">
+    <div class="step-num">8</div>
+    <div>
+      <div class="step-title">Download the APK <span class="step-tool">Unity Cloud Dashboard (browser)</span></div>
+      <div class="step-body">In Unity Cloud, find the completed build. Click the three-dot menu and select <span class="code">Download .APK</span>. Save to your local machine.</div>
+    </div>
+  </div>
+
+  <div class="step amber">
+    <div class="step-num">9</div>
+    <div>
+      <div class="step-title">Upload to Meta Quest Developer Hub <span class="step-tool">Meta Quest Developer Hub (desktop app)</span></div>
+      <div class="step-body">Open Meta Quest Developer Hub. Go to <span class="code">App Distribution</span> tab. Select your app → Upload to <span class="code">Business channel</span>.</div>
+    </div>
+  </div>
+
+  <div class="step amber">
+    <div class="step-num">10</div>
+    <div>
+      <div class="step-title">Wait for Meta to process <span class="step-tool">Meta Quest Developer Hub (desktop app)</span></div>
+      <div class="step-body">Meta processes the APK upload. This takes approximately 20 minutes. Status is visible in the Developer Hub dashboard.</div>
+    </div>
+  </div>
+
+  <div class="step red">
+    <div class="step-num">11</div>
+    <div>
+      <div class="step-title">Distributed via Meta For Work</div>
+      <div class="step-body">Update is pushed through Knauf's Quest for Business org to the correct device group (KTA or VPT). No manual action needed on headsets.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">12</div>
+    <div>
+      <div class="step-title">Headsets updated ✓</div>
+      <div class="step-body">All enrolled headsets receive the update automatically on next app launch. No manual action needed on the headsets.</div>
+    </div>
+  </div>
+
+</div><!-- /steps -->
+
+</body>
+</html>
