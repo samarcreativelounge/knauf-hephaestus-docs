@@ -679,6 +679,11 @@
 
     </div>
 
+    <div style="border:1px solid #26c6da22;border-left:3px solid #26c6da;border-radius:8px;background:#0a1a1f;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#8b949e;line-height:1.7;">
+      <strong style="color:#26c6da;">Parallel builds:</strong> If changes affect both KTA and VPT, both build configs can be triggered simultaneously in Unity Cloud — they run in parallel, not sequentially. Total wait time is ~2.5 hours max, not 4.5.<br>
+      <strong style="color:#26c6da;">Clean vs. incremental:</strong> A clean build reprocesses everything from scratch (~2–2.5 hrs). An incremental build only reprocesses what changed and can be significantly faster.
+    </div>
+
     <div style="border:1px solid #1a3540;border-left:3px solid #26c6da;border-radius:8px;background:#0a1a1f;padding:14px 16px;font-size:13px;color:#cdd9e5;line-height:1.7;">
       <strong style="color:#26c6da;">Deploying to headsets:</strong> Once a build is ready, it is uploaded to Meta's business distribution platform.
       It takes roughly 20 minutes to process before it automatically appears on all enrolled headsets — no action needed from users.
@@ -1050,7 +1055,7 @@
       The <code>quest-app</code> repository on Azure DevOps is the source of truth for all KTA and VPT Unity project code.
       Unity Cloud Build pulls from this repo via a Personal Access Token to produce APKs.<br><br>
       <strong style="color:#cdd9e5;">Current local status:</strong> The local project was initially cloned from
-      Makeway&#39;s GitHub (<code>makeway-agency/knauf</code>). As of May 2026, the local git remote is still pointing
+      Makeway&#39;s GitHub (<code>makeway-agency/knauf</code>). As of May 12, 2026, the local git remote is still pointing
       to GitHub only. Pending confirmation from Makeway on which repo is the active source of truth before switching over.
       Once confirmed, GitHub will be fully bypassed.
     </p>
@@ -1064,7 +1069,7 @@
         <p class="q-context">
           Full path: <code>dev.azure.com/rightpoint/KNI%20-%20VR%20Training/_git/quest-app</code><br><br>
           Migrated from Subvrsive&#39;s GitHub to Azure DevOps in December 2025 as part of the agency handover.
-          Unity Cloud Services connects via a Personal Access Token (PAT) verified active as of May 2026.
+          Unity Cloud Services connects via a Personal Access Token (PAT) verified active as of May 12, 2026.
         </p>
       </div>
 
@@ -1101,7 +1106,7 @@
         <span class="q-tag teal">PORTAL ACCESS</span>
         <p class="q-q">Browser access to the Azure DevOps dashboard</p>
         <p class="q-context">
-          Access via <code>dev@makeway.is</code> &mdash; confirmed registered and active as of May 2026.
+          Access via <code>dev@makeway.is</code> &mdash; confirmed registered and active as of May 12, 2026.
           Log in at <code>dev.azure.com</code>.
         </p>
       </div>
@@ -1112,7 +1117,7 @@
         <p class="q-context">
           <strong>Provider:</strong> Azure &nbsp; <strong>Organization:</strong> Rightpoint &nbsp;
           <strong>Project:</strong> KNI - VR Training &nbsp; <strong>Repository:</strong> quest-app<br><br>
-          PAT verified active (green checkmark) as of May 2026. Managed by Ryan Britt at Knauf.
+          PAT verified active (green checkmark) as of May 12, 2026. Managed by Ryan Britt at Knauf.
           Git executable set to <code>Cygwin</code> on the build server.
         </p>
       </div>
@@ -1133,7 +1138,7 @@
 
       <div class="q-card flag-green">
         <span class="q-tag green">&#10003; PAYMENT RESOLVED</span>
-        <p class="q-q">Unity Cloud Services payment method &mdash; resolved May 2026</p>
+        <p class="q-q">Unity Cloud Services payment method &mdash; resolved May 12, 2026</p>
         <p class="q-context">
           The Knauf Virtual Reality Experiences Unity Cloud account had a payment failure warning
           that has since been resolved. Build pipeline fully operational.
