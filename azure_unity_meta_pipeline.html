@@ -555,7 +555,7 @@
     <div class="step-num">7</div>
     <div>
       <div class="step-title">Wait for build to complete <span class="step-tool">Unity Cloud Dashboard (browser)</span></div>
-      <div class="step-body">KTA build: ~2 hours &nbsp;·&nbsp; VPT build: ~2.5 hours. Monitor progress in the Unity Cloud dashboard. Build runs on Unity's cloud servers.</div>
+      <div class="step-body">KTA build: ~2 hours &nbsp;·&nbsp; VPT build: ~2.5 hours. Monitor progress in the Unity Cloud dashboard. Build runs on Unity's cloud servers.<br><br>If changes affect both KTA and VPT, trigger both build configs at the same time — they run in parallel, so total wait is ~2.5 hours max, not 4.5. A <span class="code">Clean Build</span> reprocesses everything from scratch. An incremental build only reprocesses what changed and can be significantly faster.</div>
     </div>
   </div>
 
